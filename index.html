@@ -8,16 +8,16 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  // ※ 본인의 Firebase 콘솔 설정 객체(firebaseConfig)를 여기에 넣어주세요.
   const firebaseConfig = {
-  apiKey: "AIzaSyCmf-tWP3_Jyy89ONs7aKEwbv3R8lMBan4",
-  authDomain: "maintance-de542.firebaseapp.com",
-  databaseURL: "https://maintance-de542-default-rtdb.firebaseio.com",
-  projectId: "maintance-de542",
-  storageBucket: "maintance-de542.firebasestorage.app",
-  messagingSenderId: "584310100643",
-  appId: "1:584310100643:web:df5f2e3709211049772516",
-  measurementId: "G-891TMYYR56"
-};
+    apiKey: "AIzaSyCHWtPG64bUCx8wYQun767naxzQ2P46tS8",
+    authDomain: "maintenance-4b9ad.firebaseapp.com",
+    databaseURL: "https://maintenance-4b9ad-default-rtdb.firebaseio.com",
+    projectId: "maintenance-4b9ad",
+    storageBucket: "maintenance-4b9ad.firebasestorage.app",
+    messagingSenderId: "422302109224",
+    appId: "1:422302109224:web:3671635a80edfe69032f1d"
+  };
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   window.firebaseDB = db;
@@ -68,12 +68,6 @@ body{background:#f0f2f5;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-s
 .insight-card{background:#f8f9fc;border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid #f1f5f9}
 .insight-card-title{font-size:10px;color:#64748b;margin-bottom:6px;display:flex;align-items:center;gap:5px}
 .insight-card-val{font-size:20px;font-weight:700;color:#1C2B4A;margin-bottom:2px}
-.insight-card-sub{font-size:10px;display:flex;align-items:center;gap:4px}
-.trend-up{color:#A32D2D}
-.trend-down{color:#0F6E56}
-.insight-tip{background:#EEF2FF;border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid #E0E7FF}
-.insight-tip-title{font-size:10px;font-weight:700;color:#4338CA;margin-bottom:5px;display:flex;align-items:center;gap:4px}
-.insight-tip-text{font-size:11px;color:#3730A3;line-height:1.6}
 
 /* ── 페이지 헤더 ── */
 .page-header{margin-bottom:16px}
@@ -84,7 +78,6 @@ body{background:#f0f2f5;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-s
 .kpi-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
 .kpi-card{background:#fff;border-radius:12px;padding:14px 16px;border:1px solid #e2e8f0;display:flex;align-items:center;gap:12px}
 .kpi-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.kpi-body{}
 .kpi-label{font-size:10px;color:#94a3b8;margin-bottom:3px;font-weight:500}
 .kpi-val{font-size:22px;font-weight:700}
 
@@ -114,14 +107,6 @@ body{background:#f0f2f5;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-s
 .bar-track{height:6px;background:#f1f5f9;border-radius:4px;overflow:hidden}
 .bar-fill{height:100%;border-radius:4px}
 
-/* ── 순위 테이블 ── */
-.rank-table{width:100%;border-collapse:collapse;font-size:12px}
-.rank-table thead th{background:#f8f9fc;color:#64748b;font-weight:600;padding:8px 10px;text-align:left;border-bottom:1px solid #f1f5f9}
-.rank-table tbody tr:hover{background:#f8fafd}
-.rank-table tbody td{padding:7px 10px;border-bottom:0.5px solid #f1f5f9;color:#334155;vertical-align:middle}
-.rank-num{font-size:11px;font-weight:700;color:#94a3b8;width:24px;text-align:center}
-.equip-dot{width:8px;height:8px;border-radius:2px;display:inline-block;margin-right:6px}
-
 /* ── 입력 패널 ── */
 .input-panel{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;margin-bottom:16px;display:none}
 .input-panel.open{display:block}
@@ -142,10 +127,6 @@ tbody td{padding:7px 10px;border-bottom:1px solid #f8f9fc;color:#334155;vertical
 .equip-badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px}
 .btn-del{font-size:11px;padding:2px 8px;border-radius:5px;background:#FCEBEB;color:#A32D2D;border:none;cursor:pointer}
 .btn-del:hover{background:#f7c1c1}
-
-/* ── 설비 필터 탭 (부동 이력) ── */
-.filter-chip{font-size:11px;padding:4px 12px;border-radius:20px;border:1px solid #e2e8f0;background:#fff;color:#64748b;cursor:pointer;font-weight:500;transition:all .15s}
-.filter-chip:hover{background:#f8f9fc}
 
 /* ── 보수이력 레이아웃 ── */
 .maint-layout{display:grid;grid-template-columns:200px 1fr;gap:14px;min-height:400px}
@@ -171,7 +152,6 @@ tbody td{padding:7px 10px;border-bottom:1px solid #f8f9fc;color:#334155;vertical
 .btn-maint-add{font-size:11px;padding:5px 14px;background:#185FA5;color:#fff;border:none;border-radius:7px;cursor:pointer;font-weight:500}
 .maint-input-area{background:#f8f9fc;border-radius:10px;padding:14px;margin-bottom:14px;display:none;border:1px solid #e2e8f0}
 .maint-input-area.open{display:block}
-.maint-form-grid{display:grid;grid-template-columns:1fr 1fr 80px auto;gap:8px;align-items:end}
 .btn-maint-edit{font-size:11px;padding:2px 8px;border-radius:5px;background:#E6F1FB;color:#185FA5;border:none;cursor:pointer;margin-right:3px}
 .btn-maint-edit:hover{background:#B5D4F4}
 .btn-maint-cancel{font-size:11px;padding:2px 8px;border-radius:5px;background:#F1EFE8;color:#5F5E5A;border:none;cursor:pointer;margin-right:3px}
@@ -184,7 +164,7 @@ tbody td{padding:7px 10px;border-bottom:1px solid #f8f9fc;color:#334155;vertical
 .btn-add-equip{font-size:11px;padding:5px 12px;border-radius:20px;background:#fff;color:#185FA5;border:1.5px dashed #B5D4F4;cursor:pointer;font-weight:500;white-space:nowrap;display:flex;align-items:center;gap:4px}
 .btn-add-equip:hover{background:#E6F1FB}
 
-/* ── 종합분석 ── */
+/* ── 종합분석 및 차트 섹션 ── */
 .maint-chart-section{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;border:1px solid #e2e8f0}
 .maint-chart-title{font-size:12px;font-weight:600;color:#475569;margin-bottom:10px}
 .maint-kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
@@ -210,7 +190,6 @@ tbody td{padding:7px 10px;border-bottom:1px solid #f8f9fc;color:#334155;vertical
 .ctx-menu-item.danger{color:#A32D2D}
 .ctx-menu-item.danger:hover{background:#FCEBEB}
 
-/* ── 모바일 ── */
 @media(max-width:768px){
   .sidebar{width:52px}
   .main-area{margin-left:52px}
@@ -257,7 +236,6 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
 
 <!-- ══ 메인 영역 ══ -->
 <div class="main-area">
-  <!-- 상단 헤더 탭 -->
   <div class="top-header">
     <div class="header-tabs">
       <button class="header-tab on" data-page="bdong" onclick="switchMainTab('bdong',this)">📊 설비 부동 관리</button>
@@ -272,7 +250,6 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
     </div>
   </div>
 
-  <!-- 콘텐츠 + 인사이트 패널 -->
   <div class="content-layout">
     <div class="content-main">
 
@@ -379,15 +356,15 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
       </div>
 
       <footer id="footerYear">선광 설비 관리 통합 시스템 · 2024–2026</footer>
-    </div><!-- /content-main -->
+    </div>
 
     <!-- 우측 인사이트 패널 -->
     <div class="insight-panel" id="insightPanel">
       <div class="insight-title">💡 운영 인사이트</div>
       <div id="insightContent"></div>
     </div>
-  </div><!-- /content-layout -->
-</div><!-- /main-area -->
+  </div>
+</div>
 
 <!-- 부동관리 설비 추가 모달 -->
 <div class="modal-overlay" id="modalBdong">
@@ -646,7 +623,6 @@ function buildChart(id,labels,values,colors){
 function barListHTML(items,colorFn){
   if(!items.length)return'<div class="empty-msg">데이터 없음</div>';
   return items.map(d=>{
-    const pct=(d.h/items[0].h*100).toFixed(1);
     const w=Math.round(d.h/items[0].h*100);
     const c=colorFn(d);
     const cntBadge=d.cnt!=null?`<span style="font-size:10px;color:#fff;background:${c};border-radius:10px;padding:1px 6px;margin-left:4px;opacity:.85">${d.cnt}회</span>`:'';
@@ -680,7 +656,6 @@ function renderView(view){
       <div class="section-title">설비별 최대 부동원인 비중</div>
       <div class="card"><div class="bar-list">${barListHTML(items.map(d=>({name:`${d.name} — ${d.cause}`,h:d.h,cnt:d.cnt,color:d.color})),d=>d.color)}</div></div>`;
     requestAnimationFrame(()=>{buildChart('cMain',items.map(d=>d.name),items.map(d=>d.h),items.map(d=>d.color));});
-
   }else if(view==='전체 설비'){
     const items=getEquipNames().map(n=>({name:n,h:agg[n].total,cnt:agg[n].cnt,color:EQUIP_META[n].color})).filter(d=>d.h>0).sort((a,b)=>b.h-a.h);
     document.getElementById('mainView').innerHTML=`
@@ -689,7 +664,6 @@ function renderView(view){
       <div class="section-title">설비별 부동시간 비중</div>
       <div class="card"><div class="bar-list">${barListHTML(items,d=>d.color)}</div></div>`;
     requestAnimationFrame(()=>{buildChart('cMain',items.map(d=>d.name),items.map(d=>d.h),items.map(d=>d.color));});
-
   }else{
     const color=EQUIP_META[view].color;
     const cats=agg[view].catArr;
@@ -738,7 +712,6 @@ function buildBdongFilterTabs(){
   const equips = ['전체', ...getEquipNames().filter(n=>RECORDS.some(r=>r.equip===n))];
   container.innerHTML = equips.map(name=>{
     const color = name==='전체' ? '#1C2B4A' : (EQUIP_META[name]?.color||'#888');
-    const light = name==='전체' ? '#E6F1FB' : (EQUIP_META[name]?.light||'#eee');
     const isOn = bdongFilterEquip===name;
     return `<button onclick="setBdongFilter('${name}')" style="font-size:11px;padding:4px 12px;border-radius:20px;border:1px solid ${isOn?color:'#e2e8f0'};background:${isOn?color:'#fff'};color:${isOn?'#fff':color};cursor:pointer;font-weight:500;transition:all .15s">${name}</button>`;
   }).join('');
@@ -793,7 +766,6 @@ function deleteRecord(idx){
   syncAllTabs();
 }
 
-
 // ── Firebase 연결 상태 표시
 function updateSyncStatus(status){
   const el=document.getElementById('syncStatus');
@@ -807,7 +779,7 @@ window.addEventListener('offline', ()=>updateSyncStatus('offline'));
 // ══ 데이터 저장소 ══
 const STORAGE_KEY='선광설비관리_v1';
 const DEFAULT_BD_EQUIPS=['드라이어','시크너','리클레이머','탈수기','밀','쿨러','보일러'];
-const DEFAULT_MT_EQUIPS=['밀','탈수기','드라이어','쿨러','세라믹 필터','보일러','집진기 블로워 임펠러','시크너 용수펌프','조크러셔'];
+const DEFAULT_MT_EQUIPS=['밀','탈수기','드라이어','쿨러','세라믹 필터','보일러','집진기 블로워 임펠러','시크너 용수펌프','조크러셔','리클레이머'];
 
 function buildSaveData(){
   return {
@@ -832,7 +804,6 @@ function saveFile(){
     showToast('💾 저장되었습니다');
   }
 }
-// 3초 디바운스 자동저장
 let _autoSaveTimer=null;
 function autoSave(){
   clearTimeout(_autoSaveTimer);
@@ -858,13 +829,11 @@ function applyData(data){
 }
 
 function loadSavedData(){
-  // localStorage 먼저 (빠른 초기 로드)
   try{
     const saved=localStorage.getItem(STORAGE_KEY);
     if(saved) applyData(JSON.parse(saved));
   }catch(e){}
 
-  // Firebase 실시간 연동
   function connectFirebase(){
     if(!window.firebaseDB) return;
     updateSyncStatus('online');
@@ -900,108 +869,182 @@ function showToast(msg,type='save'){
 }
 
 // ══════════════════════════════════════════════
-// ② 보수 이력 데이터 & 로직
+// ② 보수 이력 데이터 & 로직 (상세내용 필드 확장)
 // ══════════════════════════════════════════════
 let MAINT_RECORDS=[
-  // 밀 — 50만 로드밀 1호
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'트러니언 오일탱크 세척·보충',dates:'24.09.29~30 / 12.02~03 / 12.11 / 12.29 / 25.02.09~10 / 04.05~06 / 26.01.13',days:2},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'오일 펌프 교체·라인 청소',dates:'2024.12.03 / 2024.12.29',days:1},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'오일 쿨러 교체',dates:'2025.08.20',days:1},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'감속기 베어링 교체',dates:'2025.05.25,27 / 2026.06.01~03',days:2},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'트러니언 고정볼트 파손 교체',dates:'25.09.04~05 / 11.22~24 / 26.03.08',days:2},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'트러니언 메탈베어링 점검·연마',dates:'2025.12.13~14',days:2},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'피니언 기어 베어링 교체',dates:'2025.11.22~24',days:3},
-  // 밀 — 50만 로드밀 2-1호
-  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'오일펌프 커플링 스파이더 파손 교체',dates:'2024.04.13 / 06.08 / 12.03',days:1},
-  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'트러니언 오일탱크 세척·보충',dates:'2024.11.04~07',days:4},
-  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'타이어 커플링 교체',dates:'2025.01.04 / 2026.01.02',days:1},
-  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'감속기 교체',dates:'2026.04.25~26',days:2},
-  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'피니언 기어 베어링 교체',dates:'2026.05.08~10',days:3},
-  // 밀 — 35만 로드밀 1호
-  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'트러니언 청소·오일 교체',dates:'24.01.28~29 / 07.20 / 12.28 / 25.05.20 / 06.28 / 07.05 / 11.24 / 26.01.13 / 02.01 / 04.27 / 05.16~18',days:2},
-  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'감속기 교체',dates:'2025.12.27~31',days:5},
-  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'감속기 베어링 교체',dates:'2026.05.12~15',days:4},
-  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'타이어 커플링 교체',dates:'2025.11.24',days:1},
-  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'피니언 기어 방향 전환',dates:'2025.12.27~31',days:5},
-  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'메탈 베어링 교체',dates:'2026.02.11 / 2026.03.30',days:1},
-  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'트러니언 고정볼트 교체',dates:'2026.04.07',days:1},
-  // 밀 — 35만 로드밀 2-1호
-  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'감속기 베어링 교체',dates:'2024.03.09~11',days:3},
-  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'감속기 베어링·커플링 교체',dates:'2025.05.31~06.01 (1/2)',days:2},
-  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'감속기 커플링 교체',dates:'2026.02.02',days:1},
-  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'모터 교체',dates:'2026.02.02',days:1},
-  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'트러니언 청소·오일 교체',dates:'2026.02.07',days:1},
-  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'동체 균열부 용접',dates:'2026.02.28',days:1},
-  // 탈수기 — 50만 1호
-  {equip:'탈수기',sub:'50만',unit:'1호',item:'구동 감속기 교체',dates:'2024.06.10 / 2026.05.29',days:1},
-  {equip:'탈수기',sub:'50만',unit:'1호',item:'스크래퍼 브라켓 제작·교체',dates:'2025.03.30',days:1},
-  {equip:'탈수기',sub:'50만',unit:'1호',item:'스크래퍼 베어링 교체',dates:'2025.06.29~30, 1/2',days:2},
-  // 탈수기 — 50만 2호
-  {equip:'탈수기',sub:'50만',unit:'2호',item:'스크래퍼 실린더 교체',dates:'2025.01.05',days:1},
-  {equip:'탈수기',sub:'50만',unit:'2호',item:'스크래퍼 브라켓 제작·교체',dates:'2025.03.30',days:1},
-  {equip:'탈수기',sub:'50만',unit:'2호',item:'스크래퍼 베어링 교체',dates:'2025.08.30~31',days:2},
-  {equip:'탈수기',sub:'50만',unit:'2호',item:'배출 스크류 감속기 교체',dates:'2026.03.23',days:1},
-  // 탈수기 — 35만 1호
-  {equip:'탈수기',sub:'35만',unit:'1호',item:'구동 감속기 교체',dates:'2024.10.30',days:1},
-  {equip:'탈수기',sub:'35만',unit:'1호',item:'스크류 감속기 교체',dates:'2024.11.08 / 2025.11.16',days:1},
-  {equip:'탈수기',sub:'35만',unit:'1호',item:'스크래퍼 베어링 교체',dates:'2024.12.09~10 / 2024.03.24',days:2},
-  // 탈수기 — 35만 2호
-  {equip:'탈수기',sub:'35만',unit:'2호',item:'감속기 교체',dates:'2024.10.26',days:1},
-  {equip:'탈수기',sub:'35만',unit:'2호',item:'피니언 기어 교체',dates:'2024.10.26',days:1},
-  {equip:'탈수기',sub:'35만',unit:'2호',item:'스크류 너트 교체',dates:'2024.02.19 / 12.14 / 2025.06.22',days:1},
-  // 드라이어 — 50만
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'스토퍼 탈락부 용접·교체',dates:'24.08.15~19 / 25.06.02 / 26.02.22 / 03.09',days:3},
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'동체 균열부 용접 보수',dates:'25.02.01 / 10.19 / 26.03.09~',days:1},
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'패드 교체',dates:'24.05.30~31 / 07.14 / 25.08.02~11',days:4},
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'서포트 롤러·베어링 교체',dates:'25.10.01~03 / 10.10~12 / 26.05.02~03',days:3},
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'가이드 롤러·베어링 교체',dates:'24.11.16~17 / 2026.03.13',days:2},
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'브리징 링 교체',dates:'2026.05.03',days:1},
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'모터 교체',dates:'2025.05.21',days:1},
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'버너 스팀트랩 교체',dates:'2025.03.30',days:1},
-  // 드라이어 — 35만
-  {equip:'드라이어',sub:'35만 드라이어',unit:'',item:'아톰블로위 교체',dates:'2025.01.09 / 01.10 / 10.20',days:1},
-  // 쿨러
-  {equip:'쿨러',sub:'50만 쿨러',unit:'',item:'덕트 마모부 보수',dates:'2025.02.08',days:1},
-  {equip:'쿨러',sub:'50만 쿨러',unit:'',item:'동체 패드 균열부 용접 보수',dates:'2025.02.23~24',days:2},
-  {equip:'쿨러',sub:'50만 쿨러',unit:'',item:'피니언 기어·베어링 교체',dates:'2026.04.10~12',days:3},
-  // 세라믹 필터
-  {equip:'세라믹 필터',sub:'',unit:'1호',item:'아지테이터 구동부 베어링 교체·보수',dates:'2024.07.10',days:1},
-  {equip:'세라믹 필터',sub:'',unit:'1호',item:'아지테이터 스크레이퍼·배관 보수',dates:'2024.06.25~26',days:2},
-  {equip:'세라믹 필터',sub:'',unit:'1호',item:'아지테이터 베어링 교체·용접 보강',dates:'2025.12.21~23',days:3},
-  {equip:'세라믹 필터',sub:'',unit:'2호',item:'아지테이터 샤프트·베어링 교체',dates:'24.02.23~24 / 06.12 / 06.27 / 07.29 / 25.12.24~26',days:2},
-  {equip:'세라믹 필터',sub:'',unit:'3호',item:'아지테이터 베어링 교체',dates:'2024.05.18 / 2025.12.03',days:1},
-  {equip:'세라믹 필터',sub:'',unit:'4호',item:'아지테이터 샤프트·베어링 교체',dates:'2025.09.01',days:1},
-  {equip:'세라믹 필터',sub:'',unit:'4호',item:'진공펌프 교체',dates:'2025.09.09',days:1},
-  {equip:'세라믹 필터',sub:'',unit:'5호',item:'아지테이터 커플링·베어링 교체',dates:'2024.07~08 / 25.07.20~21 / 07.26~27',days:2},
-  {equip:'세라믹 필터',sub:'',unit:'5호',item:'감속기 교체',dates:'2025.07.26~27',days:2},
-  {equip:'세라믹 필터',sub:'',unit:'6호',item:'아지테이터 커플링·베어링 교체',dates:'2024.02.25~26 / 2024.09~10',days:2},
-  {equip:'세라믹 필터',sub:'',unit:'7호',item:'아지테이터 베어링·커플링 교체',dates:'2024.11.23 / 25.11.29 / 12.01',days:1},
-  {equip:'세라믹 필터',sub:'',unit:'7호',item:'드럼 감속기 교체',dates:'2024.12.24',days:1},
-  {equip:'세라믹 필터',sub:'',unit:'8호',item:'아지테이터 커플링·베어링 교체',dates:'25.07.02~03 / 09.02~03 / 12.03',days:2},
-  // 보일러
-  {equip:'보일러',sub:'3ton 보일러',unit:'',item:'버너 모터 교체',dates:'2024.03.19',days:1},
-  {equip:'보일러',sub:'3ton 보일러',unit:'',item:'버너 실린더·노즐 교체',dates:'24.04.17 / 11.29 / 12.06~07 / 26.01.28 / 26.03.02',days:2},
-  {equip:'보일러',sub:'3ton 보일러',unit:'',item:'압력계 라인 가스켓·패킹 교체',dates:'2024.03.31 / 2026.04.27',days:1},
-  {equip:'보일러',sub:'3ton 보일러',unit:'',item:'동체 냉각호스 설치',dates:'2025.01.04',days:1},
-  // 집진기 블로워 임펠러
-  {equip:'집진기 블로워 임펠러',sub:'',unit:'',item:'50만 드라이어 임펠러 교체',dates:'2025.02.15~16',days:2},
-  {equip:'집진기 블로워 임펠러',sub:'',unit:'',item:'35만 드라이어 베어링 교체',dates:'2025.03.21~23',days:3},
-  {equip:'집진기 블로워 임펠러',sub:'',unit:'',item:'재자선 베어링 교체',dates:'2024.09.14~15',days:2},
-  // 시크너 용수펌프
-  {equip:'시크너 용수펌프',sub:'',unit:'',item:'1호 펌프 교체',dates:'2024.03.19 / 2025.01.12',days:1},
-  {equip:'시크너 용수펌프',sub:'',unit:'',item:'3호 펌프 교체',dates:'2024.10.08~09 / 2025.02.22 / 2026.05.25',days:2},
-  {equip:'시크너 용수펌프',sub:'',unit:'',item:'4호 펌프 교체',dates:'2024.11.10 / 2025.07.06 / 2026.05.24',days:1},
-  // 조크러셔
-  {equip:'조크러셔',sub:'',unit:'상부',item:'스칼핑 바 라이너 교체',dates:'2024.10.19',days:1},
-  {equip:'조크러셔',sub:'',unit:'상부',item:'스윙죠 베어링 파손 교체',dates:'2025.02.11~12',days:2},
-  {equip:'조크러셔',sub:'',unit:'파쇄',item:'스윙죠 플레이트 및 라이너 교체',dates:'2025.10.25~26',days:2},
+  // ── 밀 ──
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'트러니언 오일탱크 세척·보충',detail:'오일탱크 세척 및 신유 보충',dates:'24.09.29~30 / 12.02~03 / 12.11 / 12.29 / 25.02.09~10 / 04.05~06 / 26.01.13',days:2},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'오일 펌프 교체·라인 청소',detail:'오일펌프 교체 및 배관 라인 스케일 청소',dates:'2024.12.03 / 2024.12.29',days:1},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'오일 쿨러 교체',detail:'오일 쿨러 신품 교체',dates:'2025.08.20',days:1},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'감속기 베어링 교체',detail:'감속기 입력단 및 출력단 베어링 교체',dates:'2025.05.25,27 / 2026.06.01~03',days:2},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'트러니언 고정볼트 파손 교체',detail:'트러니언 체결 볼트 파손품 교체 및 조임',dates:'25.09.04~05 / 11.22~24 / 26.03.08',days:2},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'트러니언 메탈베어링 점검·연마',detail:'메탈베어링 표면 긁힘 점검 및 랩핑 연마',dates:'2025.12.13~14',days:2},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'피니언 기어 베어링 교체',detail:'피니언 샤프트 양단 베어링 교체',dates:'2025.11.22~24',days:3},
+  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'오일펌프 커플링 스파이더 교체',detail:'커플링 우레탄 스파이더 마모 파손 교체',dates:'2024.04.13 / 06.08 / 12.03',days:1},
+  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'트러니언 오일탱크 세척·보충',detail:'오일탱크 플러싱 및 세척',dates:'2024.11.04~07',days:4},
+  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'타이어 커플링 교체',detail:'타이어 커플링 탄성체 교체',dates:'2025.01.04 / 2026.01.02',days:1},
+  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'감속기 교체',detail:'감속기 전체 신품 교체 및 얼라인먼트',dates:'2026.04.25~26',days:2},
+  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'피니언 기어 베어링 교체',detail:'피니언 샤프트 하우징 베어링 교체',dates:'2026.05.08~10',days:3},
+
+  // ── 탈수기 ──
+  {equip:'탈수기',sub:'50만',unit:'1호',item:'구동 감속기 교체',detail:'구동 감속기 신품 교체 조치',dates:'2024.06.10 / 2026.05.29',days:1},
+  {equip:'탈수기',sub:'50만',unit:'1호',item:'스크래퍼 브라켓 교체',detail:'스크래퍼 고정 브라켓 제작 및 현장 교체',dates:'2025.03.30',days:1},
+  {equip:'탈수기',sub:'50만',unit:'1호',item:'스크래퍼 베어링 교체',detail:'스크래퍼 샤프트 베어링 교체',dates:'2025.06.29~30',days:2},
+  {equip:'탈수기',sub:'50만',unit:'2호',item:'스크래퍼 실린더 교체',detail:'공압 실린더 누기 및 패킹 소손 교체',dates:'2025.01.05',days:1},
+  {equip:'탈수기',sub:'50만',unit:'2호',item:'배출 스크류 감속기 교체',detail:'배출 스크류용 감속기 교체',dates:'2026.03.23',days:1},
+
+  // ── 드라이어 ──
+  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'스토퍼 보수 용접',detail:'스토퍼 탈락부 보강 용접 및 신규 부착',dates:'24.08.15~19 / 25.06.02 / 26.02.22 / 03.09',days:3},
+  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'동체 균열부 용접 보수',detail:'동체 Shell 크랙 발생부 V홈 가공 및 용접',dates:'25.02.01 / 10.19 / 26.03.09',days:1},
+  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'서포트 롤러·베어링 교체',detail:'서포트 롤러 편마모 교체 및 베어링 교체',dates:'25.10.01~03 / 10.10~12 / 26.05.02~03',days:3},
+
+  // ── 리클레이머 (기존 이력 일체 탑재) ──
+  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'휠 및 베어링 교체(4개)',dates:'2018.02.03~04',days:2},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'샤프트 절단 베어링, 샤프트, 휠 교체(산, 사무실 측)',dates:'2018.06.28',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'트레벌링 휠 베어링 점검',dates:'2018.09.15',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'휠 및 베어링 교체(사무실, 산)',dates:'2019.03.09~10',days:2},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'휠 마모 교체(사무실, 산)',dates:'2019.10.29',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'휠 편마모로 휠 및 베어링 교체(사무실 산, ALC 산)',dates:'2020.06.22',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'구동 휠, 베어링 교체(강측 2개)',dates:'2020.07.27',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'트레버싱 휠, 샤프트, 하우징, 베어링 교체(alc, 강측 / 사무실, 강측)',dates:'2022.04.29~30',days:2},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'휠, 하우징, 베어링 전체 교체 (사무실 강측 마모 등)',dates:'2023.08.08~10',days:3},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'트레벌링 휠 베어링 전체 교체 (145*190*16 리테이너)',dates:'2024.02.05~07',days:3},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'휠, 샤프트, 베어링, 하우징 교체(alc, 강측)',dates:'2024.06.30~07.01',days:2},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'트레버싱 휠 파손 교체(센서 측: 하우징, 베어링, 휠, 샤프트 일체 SCM440 적용)',dates:'2025.06.17',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'트레버싱 휠 마모 교체(산측 2ea, 베어링, 하우징 포함)',dates:'2025.09.13',days:1},
+
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'구동 Shaft: 샤프트 파손 교체, 베어링, 체인 교체, 스프라켓 육성 가공',dates:'2017.04.20',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'구동 Shaft: 샤프트 절단 가공 교체, 베어링 UP, 스프라켓 교체',dates:'2017.08.03',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'휠 Shaft: 베어링 및 샤프트 교체(샤프트 절단, ALC 강측 센서측)',dates:'2018.03.13',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'휠 샤프트, 베어링 교체(샤프트 절단, 강, ALC측)',dates:'2018.10.02',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'휠 샤프트 절단 교체(베어링 포함, 강 ALC측)',dates:'2019.04.25 / 2019.08.28',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'구동 샤프트 베어링 너트 조임',dates:'2019.04.29',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'휠 샤프트 절단 교체(베어링 포함, 강 사무실측)',dates:'2019.07.27',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'샤프트 교체',dates:'2019.10.29',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'샤프트 절단 교체, 베어링, 하우징 교체(alc, 강측)',dates:'2020.01.21~22',days:2},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'Shaft 및 베어링 교체, 엔코더 및 오일씰 교체 (강 ALC측)',dates:'2021.03.15',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'Shaft 및 베어링 교체(샤프트 절단, 강 사무실측)',dates:'2021.06.17~18',days:2},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'휠 샤프트 절단 교체(휠만 재사용, ALC 강측)',dates:'2021.12.31~02.03',days:3},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'샤프트, 베어링, 하우징, 스프로킷 교체(예방정비, ALC 산측)',dates:'2022.01.01~02',days:2},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'구동 샤프트 베어링/하우징 교체, 체인 교체(사무실 측)',dates:'2022.03.28~29',days:2},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'샤프트, 하우징, 베어링 교체(alc, 강측 샤프트/하우징 파손)',dates:'2022.12.29',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'샤프트 전체 교체(alc, 강측 제외 / 사무실 강측 파손 교체)',dates:'2023.08.08~10',days:3},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'휠 샤프트 파손 긴급 교체(alc 강측: 샤프트, 베어링, 하우징)',dates:'2024.01.11',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'휠 샤프트 절단 긴급 교체(alc 강측: 샤프트, 베어링, 하우징 1개)',dates:'2024.08.28',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'휠 샤프트 절단 긴급 교체(alc 강측: 샤프트, 베어링, 하우징 2개)',dates:'2025.02.27 / 2025.05.14',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'구동 샤프트/스프라켓 육성 가공, 베어링/체인 교체(사측)',dates:'2025.05.09',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'구동 샤프트 베어링 교체(유격)',dates:'2025.09.13',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'구동 샤프트 하우징 볼트 교체(alc측)',dates:'2026.01.25~26',days:2},
+
+  {equip:'리클레이머',sub:'',unit:'휠 하우징',item:'휠 하우징',detail:'휠 하우징 균열부 용접(4곳)',dates:'2020.05.02',days:1},
+  {equip:'리클레이머',sub:'',unit:'휠 하우징',item:'휠 하우징',detail:'휠 하우징 파손 하우징 교체(센서 측)',dates:'2025.05.17~19',days:2},
+  {equip:'리클레이머',sub:'',unit:'휠 하우징',item:'휠 하우징',detail:'휠 하우징 파손 교체(ALC, 산측 2개)',dates:'2026.05.14',days:1},
+  {equip:'리클레이머',sub:'',unit:'휠 하우징',item:'휠 하우징',detail:'휠 하우징 균열 교체(ALC 산측), 베어링 교체, 샤프트 육성 가공',dates:'2026.06.04~05',days:1},
+
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'가이드 롤러 베어링 교체(ALC 강, 산)',dates:'2017.06.26 / 2017.10.01~02 / 2018.05.13 / 2018.10.16 / 2018.11.12 / 2019.01.07 / 2019.03.09~10 / 2022.03.28~29 / 2022.06.12~14 / 2023.06.18 / 2024.01~02 / 2026.06.27~28',days:1},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'롤러 및 베어링 일괄 교체(6개)',dates:'2017.07.27',days:1},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'베어링 및 샤프트 육성 가공',dates:'2018.06.04',days:1},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'하부 산측 롤러 가공 및 베어링 교체',dates:'2018.06.10',days:1},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'하부 양측 롤러 및 베어링 교체',dates:'2018.08.08',days:1},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'베어링 교체(alc 산측 상부), 볼트 파손 교체, 프레임 용접',dates:'2019.08.19',days:1},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'하부 강측 베어링 교체, 롤러 방향 전환',dates:'2019.10.16~18',days:3},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'가이드 롤러 베어링/샤프트/하우징 교체(alc 상부 2개소)',dates:'2020.03.02~03',days:2},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'베어링 교체 및 샤프트 가공 교체',dates:'2020.05.02',days:1},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'베어링/하우징/롤러/샤프트 교체(강측 하부, alc 강 상부)',dates:'2020.08.22',days:1},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'로라 프레임 보강 용접',dates:'2020.12.20',days:1},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'가이드롤러 베어링 하우징 교체',dates:'2021.02.08~10',days:3},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'Drum Guide Roller 점검 및 위치 조정',dates:'2021.03.22',days:1},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'가이드 베어링 및 하우징 마모 교체(하부, 산)',dates:'2021.07.10~11',days:2},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'하우징 및 베어링 교체(강, 하부), 롤러/샤프트/베어링 교체(사무실 강 상부)',dates:'2022.01.11~12',days:2},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'베어링 교체(사무실 강 상부, 강 하부, alc 강 상부 총 3개)',dates:'2022.10.01~02',days:2},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'가이드 롤러 주변 균열부 용접(하부, 산측)',dates:'2023.08.13~14',days:2},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'하부 프레임 용접(강), 볼트 파손 교체 2곳',dates:'2024.02.08',days:1},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'하우징 및 베어링 교체(강, 하부)',dates:'2024.06.30~07.01',days:2},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'샤프트, 베어링, 하우징 교체(하부, 산측)',dates:'2025.10.18~19',days:2},
+  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'베어링, 롤러 교체, 샤프트 육성 가공(사무실, 산, 상부)',dates:'2026.03.15',days:1},
+
+  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'사이드 롤러 베어링 교체',dates:'2018.05.15 / 2018.10.16 / 2019.01.23 / 2019.03.09~10 / 2019.04.29 / 2019.07.06 / 2020.03.28 / 2021.03.22 / 2022.07.02~03 / 2022.10.01~02 / 2023.06.25~26 / 2023.08.13~14 / 2024.01~02 / 2025.05.17~19 / 2025.10.18~19 / 2026.06.27~28',days:1},
+  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'사이드롤러 교체(사무실, 강측, 상)',dates:'2017.10.01~02',days:2},
+  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'싸이드 롤러 위치 조정(동체 쏠림 원인)',dates:'2018.10.22',days:1},
+  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'사무실 강측 하부 베어링 교체(오일링에서 리테이너 개조)',dates:'2018.11.11',days:1},
+  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'베어링 교체 및 롤러 육성 가공(ALC, 산측 하부)',dates:'2019.08.28',days:1},
+  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'마모 교체(사무실 산 상부: 베어링, 롤러, 샤프트 교체)',dates:'2020.01.19',days:1},
+  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'하우징 볼트 파손 교체(사무실, 산, 하부)',dates:'2020.03.02~03',days:2},
+  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'베어링 및 샤프트 교체(사무실, 강측 하부)',dates:'2020.06.20',days:1},
+  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'롤러 및 베어링 교체(alc 강 상부) / 베어링 교체(사무실 산 하부)',dates:'2020.11.14~15',days:2},
+  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'베어링 및 샤프트 교체(사무실 산 상부), 베어링 교체(alc 강 하부)',dates:'2021.07.10~11',days:2},
+  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'싸이드 롤러 외 볼트류 전체 교체',dates:'2024.10.29',days:1},
+  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'마모 교체(사무실 산 상부, 사무실 강 상부, alc 강 상부)',dates:'2024.12.30~31',days:2},
+  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'브라켓 파손 보강 용접(alc, 산, 상부)',dates:'2025.09.07',days:1},
+
+  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'Support Roller bed 용접 및 프레임 볼트 교체',dates:'2017.04.10 / 2017.06.03~06 / 2017.07.06',days:1},
+  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'롤러 및 베어링 교체(2개 다)',dates:'2017.06.16',days:2},
+  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'베드 볼트 고정 체결(ALC, 산)',dates:'2017.10.01~02',days:2},
+  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'베어링 전체 교체',dates:'2018.11.10~11 / 2021.02.08~10 / 2023.08.11~12',days:2},
+  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'사무실측 서포트 롤러 교체(베어링 신품, 하우징 재사용)',dates:'2018.12.30~31',days:2},
+  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'낙광 방지판 교체',dates:'2019.04.29',days:1},
+  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'마모 교체(베어링 포함)',dates:'2019.07.06 / 2022.08.27~29 / 2024.10.12~15',days:3},
+  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'베드 심(Shim) 삽입 작업(전체)',dates:'2019.10.16~18',days:3},
+  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'베어링 교체(alc, 산측 상부)',dates:'2020.01.23',days:1},
+  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'보강대 사용 용접 및 산측 심 삽입',dates:'2020.03.02~03 / 2020.05.11~12',days:2},
+  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'베어링 및 Housing 교체(alc, 산측)',dates:'2020.03.28',days:1},
+  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'서포트롤러 전면 교체 (외주 업체)',dates:'2020.07.31~08.13',days:14},
+  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'심(Shim) 제작 및 삽입(12t, 롤러 마모 대응)',dates:'2026.01.25~26',days:2},
+
+  {equip:'리클레이머',sub:'',unit:'스크래퍼',item:'스크래퍼',detail:'프레임 절단 보강 용접(사무실 산쪽)',dates:'2017.03.31',days:1},
+  {equip:'리클레이머',sub:'',unit:'스크래퍼',item:'스크래퍼',detail:'마모 및 균열부 보강 용접',dates:'2017.10.01~02 / 2019.10.16~18 / 2020.01.23 / 2020.03.02~03 / 2021.07.23~26 / 2022.01.11~12 / 2024.10.29',days:2},
+  {equip:'리클레이머',sub:'',unit:'스크래퍼',item:'스크래퍼',detail:'균열부 교체(alc측)',dates:'2019.07.06',days:1},
+  {equip:'리클레이머',sub:'',unit:'스크래퍼',item:'스크래퍼',detail:'스크래퍼 핀 이탈 교체(alc, 강측)',dates:'2019.11.20',days:1},
+  {equip:'리클레이머',sub:'',unit:'스크래퍼',item:'스크래퍼',detail:'파이프 마모 보강 용접',dates:'2020.05.11~12',days:2},
+  {equip:'리클레이머',sub:'',unit:'스크래퍼',item:'스크래퍼',detail:'스테이 보강 용접(alc, 6개소)',dates:'2024.06.30~07.01',days:2},
+  {equip:'리클레이머',sub:'',unit:'스크래퍼',item:'스크래퍼',detail:'파이프 절단 교체 및 보강대 용접(ALC측)',dates:'2025.08.07',days:1},
+
+  {equip:'리클레이머',sub:'',unit:'드럼 및 동체',item:'드럼 및 동체',detail:'거스기어 용접 보수',dates:'2017.01.06',days:1},
+  {equip:'리클레이머',sub:'',unit:'드럼 및 동체',item:'드럼 및 동체',detail:'드럼 링 설치 용접',dates:'2017.06.03~06',days:4},
+  {equip:'리클레이머',sub:'',unit:'드럼 및 동체',item:'드럼 및 동체',detail:'드럼 링 용접 제거 및 외부 가공 조립(업체)',dates:'2017.07.22~28',days:7},
+  {equip:'리클레이머',sub:'',unit:'드럼 및 동체',item:'드럼 및 동체',detail:'동체 산측을 alc측으로 얼라인먼트 조정',dates:'2019.03.18',days:1},
+  {equip:'리클레이머',sub:'',unit:'드럼 및 동체',item:'드럼 및 동체',detail:'동체(기어 및 링) 전면 교체(업체)',dates:'2020.07.31~08.13',days:14},
+  {equip:'리클레이머',sub:'',unit:'드럼 및 동체',item:'드럼 및 동체',detail:'동체 내부 용접 및 그라인딩 평삭',dates:'2020.11.14~15',days:2},
+
+  {equip:'리클레이머',sub:'',unit:'내판 라이너',item:'내판 라이너',detail:'내판 라이나 교체 1, 2, 3번',dates:'2017.01.04 / 2017.04.26',days:1},
+  {equip:'리클레이머',sub:'',unit:'내판 라이너',item:'내판 라이너',detail:'사이드 라이나 보강 용접',dates:'2017.06.14~15',days:2},
+  {equip:'리클레이머',sub:'',unit:'내판 라이너',item:'내판 라이너',detail:'내판 라이나 프레임 볼트 조임 및 용접(사무실측)',dates:'2020.06.23',days:1},
+  {equip:'리클레이머',sub:'',unit:'내판 라이너',item:'내판 라이너',detail:'내판 및 내판 프레임 교체(업체)',dates:'2020.07.31~08.13',days:14},
+  {equip:'리클레이머',sub:'',unit:'내판 라이너',item:'내판 라이너',detail:'ALC측 내판 라이나 2, 3번 교체 및 보수',dates:'2021.01.26',days:1},
+  {equip:'리클레이머',sub:'',unit:'내판 라이너',item:'내판 라이너',detail:'내판 라이나 탈락 제거(3ea)',dates:'2023.07.19',days:1},
+
+  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'드럼과 버켓 사이 밴딩 용접',dates:'2017.06.14~15',days:2},
+  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'버켓 구동 감속기 교체, 아이들 스프라켓 2개 교체',dates:'2017.07.22',days:1},
+  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'아이들 스프라켓 상하 베어링/체인 교체',dates:'2018.07.08 / 2022.06.12~14',days:2},
+  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'버켓 구동 감속기 베어링 파손 교체',dates:'2020.01.23',days:1},
+  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'드럼 감속기 교체',dates:'2021.02.08~10',days:3},
+  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'버켓 링 기어 균열부 V컷팅 용접(3개소)',dates:'2021.07.23~26',days:3},
+  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'버켓 내측 공간 좁힘 개조(170mm→30mm, 총 15ea)',dates:'2024.07.06',days:1},
+  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'아이들러 스프라켓 앤드카바 볼트 교체(하부)',dates:'2026.01.25~26',days:2},
+  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'버켓 구동 감속기 교체(수리품) 및 텐션 볼트 용접',dates:'2026.03.23',days:1},
+
+  {equip:'리클레이머',sub:'',unit:'트레버싱 감속기',item:'트레버싱 감속기',detail:'구동 감속기 샤프트 가공 교체, 1단 베어링 교체',dates:'2022.08.25',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 감속기',item:'트레버싱 감속기',detail:'트레벌링 감속기 오일 레벨 호스 교체(산측)',dates:'2024.02.08',days:1},
+  {equip:'리클레이머',sub:'',unit:'트레버싱 감속기',item:'트레버싱 감속기',detail:'트레버싱 감속기 파손 신품 교체',dates:'2025.05.09',days:1},
+
+  {equip:'리클레이머',sub:'',unit:'주행 레일',item:'주행 레일',detail:'주행 레일 전면 교체',dates:'2018.04 / 2020.07.24',days:2},
+  {equip:'리클레이머',sub:'',unit:'주행 레일',item:'주행 레일',detail:'레일 밀림 조정',dates:'2020.11.14~15',days:2},
+  {equip:'리클레이머',sub:'',unit:'주행 레일',item:'주행 레일',detail:'레일 보수(6개소 육성 및 그라인딩, 2개소 간격 조정)',dates:'2025.05.17~19',days:2},
+
+  {equip:'리클레이머',sub:'',unit:'프레임/부속',item:'프레임/부속',detail:'프레임 균열부 용접 보수',dates:'2017.10.01~02 / 2019.03.18 / 2020.05.11~12 / 2021.03.22 / 2021.07.18',days:2},
+  {equip:'리클레이머',sub:'',unit:'프레임/부속',item:'프레임/부속',detail:'고정 볼트류 전체 재조임',dates:'2018.08.19',days:1},
+  {equip:'리클레이머',sub:'',unit:'프레임/부속',item:'프레임/부속',detail:'프레임 볼트 파손 및 균열 보수',dates:'2019.03.09~10 / 2019.10.29 / 2026.01.25~26',days:2},
+  {equip:'리클레이머',sub:'',unit:'프레임/부속',item:'프레임/부속',detail:'사다리 개수(강측 1ea, 본체 2ea)',dates:'2022.02.22',days:1},
+  {equip:'리클레이머',sub:'',unit:'프레임/부속',item:'프레임/부속',detail:'스키바 위치 조정 (운전실측 약 750mm 이동)',dates:'2022.02.23',days:1},
+  {equip:'리클레이머',sub:'',unit:'프레임/부속',item:'프레임/부속',detail:'트레버싱 스토퍼 설치(산측)',dates:'2022.03.02',days:1},
+  {equip:'리클레이머',sub:'',unit:'프레임/부속',item:'프레임/부속',detail:'트레버싱 휠 주변 및 보안커버 보강 용접(사무실 강측)',dates:'2022.03.28~29',days:2},
 ];
 
-const MAINT_EQUIPS=['밀','탈수기','드라이어','쿨러','세라믹 필터','보일러','집진기 블로워 임펠러','시크너 용수펌프','조크러셔'];
-const MAINT_COLORS={'밀':'#3B6D11','탈수기':'#993556','드라이어':'#BA7517','쿨러':'#0F6E56','세라믹 필터':'#185FA5','보일러':'#5F5E5A','집진기 블로워 임펠러':'#7C3D8F','시크너 용수펌프':'#0E7490','조크러셔':'#854F0B'};
-const MAINT_LIGHTS={'밀':'#EAF3DE','탈수기':'#FBEAF0','드라이어':'#FAEEDA','쿨러':'#E1F5EE','세라믹 필터':'#E6F1FB','보일러':'#F1EFE8','집진기 블로워 임펠러':'#F3E8FF','시크너 용수펌프':'#E0F7FA','조크러셔':'#FFF3E0'};
+const MAINT_EQUIPS=['밀','탈수기','드라이어','쿨러','세라믹 필터','보일러','집진기 블로워 임펠러','시크너 용수펌프','조크러셔','리클레이머'];
+const MAINT_COLORS={'밀':'#3B6D11','탈수기':'#993556','드라이어':'#BA7517','쿨러':'#0F6E56','세라믹 필터':'#185FA5','보일러':'#5F5E5A','집진기 블로워 임펠러':'#7C3D8F','시크너 용수펌프':'#0E7490','조크러셔':'#854F0B','리클레이머':'#185FA5'};
+const MAINT_LIGHTS={'밀':'#EAF3DE','탈수기':'#FBEAF0','드라이어':'#FAEEDA','쿨러':'#E1F5EE','세라믹 필터':'#E6F1FB','보일러':'#F1EFE8','집진기 블로워 임펠러':'#F3E8FF','시크너 용수펌프':'#E0F7FA','조크러셔':'#FFF3E0','리클레이머':'#E6F1FB'};
 
-let MAINT_COL_HEADERS=['보수 항목','보수 날짜','소요일'];
+let MAINT_COL_HEADERS=['보수 항목','수리 일자','수리 상세내용','작업 소요일'];
 let currentMaintEquip=MAINT_EQUIPS[0];
 let currentMaintSub=null;
 let currentMaintUnit=null;
@@ -1025,7 +1068,6 @@ function buildMaintSidebar(){
 
 function selectMaintEquip(name){
   currentMaintEquip=name;
-  // 첫번째 sub/unit 자동 선택
   const records=MAINT_RECORDS.filter(r=>r.equip===name);
   const subs=[...new Set(records.map(r=>r.sub).filter(Boolean))];
   currentMaintSub=subs.length?subs[0]:null;
@@ -1037,16 +1079,14 @@ function selectMaintEquip(name){
 }
 
 function renderMaintContent(){
-  const color=MAINT_COLORS[currentMaintEquip];
-  const light=MAINT_LIGHTS[currentMaintEquip];
+  const color=MAINT_COLORS[currentMaintEquip]||'#185FA5';
+  const light=MAINT_LIGHTS[currentMaintEquip]||'#E6F1FB';
   const records=MAINT_RECORDS.filter(r=>r.equip===currentMaintEquip);
   const subs=[...new Set(records.map(r=>r.sub).filter(Boolean))];
-  const hasUnit=[...new Set(records.map(r=>r.unit).filter(Boolean))].length>0;
 
   let html=`<div class="maint-header" style="color:${color}">${currentMaintEquip}</div>
-  <div class="maint-sub-header">보수 이력 · 2024–2026 · 총 ${records.length}건</div>`;
+  <div class="maint-sub-header">보수 이력 · 총 ${records.length}건</div>`;
 
-  // sub 탭 (50만 로드밀 / 35만 로드밀 등)
   if(subs.length>1){
     if(!currentMaintSub) currentMaintSub=subs[0];
     html+=`<div class="detail-tab-row">
@@ -1059,7 +1099,6 @@ function renderMaintContent(){
   const subRecords=currentMaintSub?records.filter(r=>r.sub===currentMaintSub):records;
   const units=[...new Set(subRecords.map(r=>r.unit).filter(Boolean))];
 
-  // unit 탭 (1호 밀 / 2-1호 밀 등)
   if(units.length>1){
     if(!currentMaintUnit||!units.includes(currentMaintUnit)) currentMaintUnit=units[0];
     html+=`<div class="detail-tab-row">
@@ -1071,34 +1110,37 @@ function renderMaintContent(){
 
   const finalRecords=currentMaintUnit?subRecords.filter(r=>r.unit===currentMaintUnit):subRecords;
 
-  // 추가 버튼 & 입력폼
+  // ── 요청하신 4개 항목 입력 폼 ──
   html+=`<div class="maint-add-row">
     <button class="btn-maint-add" onclick="toggleMaintInput()">＋ 보수 이력 추가</button>
   </div>
   <div class="maint-input-area${maintInputOpen?' open':''}" id="maintInputArea">
-    <div class="maint-form-grid">
-      <div class="form-group"><div class="form-label">보수 항목</div><input class="form-input" id="mfItem" placeholder="예: 감속기 베어링 교체"></div>
-      <div class="form-group"><div class="form-label">보수 날짜</div><input class="form-input" id="mfDates" placeholder="예: 2026.06.22"></div>
+    <div class="maint-form-grid" style="display:grid;grid-template-columns:1.2fr 1fr 1.8fr 75px auto;gap:8px;align-items:end">
+      <div class="form-group"><div class="form-label">보수 항목 (차트 집계)</div><input class="form-input" id="mfItem" placeholder="예: 트레버싱 휠"></div>
+      <div class="form-group"><div class="form-label">수리 일자</div><input class="form-input" id="mfDates" placeholder="예: 2026.06.22"></div>
+      <div class="form-group"><div class="form-label">수리 상세내용</div><input class="form-input" id="mfDetail" placeholder="예: 휠 및 베어링 교체(4개)"></div>
       <div class="form-group"><div class="form-label">소요일</div><input class="form-input" type="number" id="mfDays" min="1" placeholder="1"></div>
       <button class="btn-add" onclick="addMaintRecord()" style="height:34px">추가</button>
     </div>
   </div>`;
 
-  // 테이블
+  // ── 보수 이력 테이블 ──
   if(finalRecords.length){
     html+=`<table class="maint-table" id="maintTable">
       <thead><tr>
-        <th ondblclick="editColHeader(this,0)" title="더블클릭하여 편집" style="cursor:pointer" id="mCol0">${MAINT_COL_HEADERS[0]}</th>
-        <th ondblclick="editColHeader(this,1)" title="더블클릭하여 편집" style="cursor:pointer" id="mCol1">${MAINT_COL_HEADERS[1]}</th>
-        <th ondblclick="editColHeader(this,2)" title="더블클릭하여 편집" style="cursor:pointer;width:70px;text-align:center" id="mCol2">${MAINT_COL_HEADERS[2]}</th>
+        <th style="width:16%" id="mCol0">${MAINT_COL_HEADERS[0]}</th>
+        <th style="width:15%" id="mCol1">${MAINT_COL_HEADERS[1]}</th>
+        <th id="mCol2">${MAINT_COL_HEADERS[2]}</th>
+        <th style="width:85px;text-align:center" id="mCol3">${MAINT_COL_HEADERS[3]}</th>
         <th style="width:90px;text-align:right">관리</th>
       </tr></thead>
       <tbody id="maintTbody">
         ${finalRecords.map(r=>{
           const realIdx=MAINT_RECORDS.indexOf(r);
           return`<tr id="mrow_${realIdx}">
-            <td id="mcell_item_${realIdx}">${r.item}</td>
+            <td id="mcell_item_${realIdx}" style="font-weight:600;color:#1a1a2e">${r.item}</td>
             <td id="mcell_dates_${realIdx}"><div class="date-chips">${r.dates.split('/').map(d=>d.trim()).filter(d=>d.length>2).map(d=>`<span class="date-chip">${d}</span>`).join('')}</div></td>
+            <td id="mcell_detail_${realIdx}" style="color:#475569">${r.detail || '-'}</td>
             <td id="mcell_days_${realIdx}" style="text-align:center"><span class="days-badge" style="background:${light};color:${color}">${r.days}일</span></td>
             <td><div class="action-btns">
               <button class="btn-maint-edit" onclick="startEdit(${realIdx})">수정</button>
@@ -1118,8 +1160,6 @@ function renderMaintContent(){
 // ── 인라인 수정 ──────────────────────────────────────
 function startEdit(idx){
   const r=MAINT_RECORDS[idx];
-  const color=MAINT_COLORS[currentMaintEquip];
-  const light=MAINT_LIGHTS[currentMaintEquip];
   const row=document.getElementById(`mrow_${idx}`);
   if(!row)return;
   row.classList.add('editing-row');
@@ -1127,10 +1167,11 @@ function startEdit(idx){
     `<input class="edit-input" id="edit_item_${idx}" value="${r.item.replace(/"/g,'&quot;')}">`;
   document.getElementById(`mcell_dates_${idx}`).innerHTML=
     `<input class="edit-input" id="edit_dates_${idx}" value="${r.dates.replace(/"/g,'&quot;')}">`;
+  document.getElementById(`mcell_detail_${idx}`).innerHTML=
+    `<input class="edit-input" id="edit_detail_${idx}" value="${(r.detail||'').replace(/"/g,'&quot;')}">`;
   document.getElementById(`mcell_days_${idx}`).innerHTML=
-    `<input class="edit-input" type="number" id="edit_days_${idx}" value="${r.days}" min="1" style="width:54px;text-align:center" title="${MAINT_COL_HEADERS[2]}">`;
-  // 버튼 교체
-  row.cells[3].innerHTML=`<div class="action-btns">
+    `<input class="edit-input" type="number" id="edit_days_${idx}" value="${r.days}" min="1" style="width:54px;text-align:center">`;
+  row.cells[4].innerHTML=`<div class="action-btns">
     <button class="btn-maint-ok" onclick="saveEdit(${idx})">✓ 저장</button>
     <button class="btn-maint-cancel" onclick="cancelEdit(${idx})">✕ 취소</button>
   </div>`;
@@ -1139,10 +1180,12 @@ function startEdit(idx){
 function saveEdit(idx){
   const item=document.getElementById(`edit_item_${idx}`)?.value.trim();
   const dates=document.getElementById(`edit_dates_${idx}`)?.value.trim();
+  const detail=document.getElementById(`edit_detail_${idx}`)?.value.trim();
   const days=parseInt(document.getElementById(`edit_days_${idx}`)?.value)||1;
-  if(!item||!dates){alert('보수 항목과 날짜를 입력해 주세요.');return;}
+  if(!item||!dates){alert('보수 항목과 수리 일자를 입력해 주세요.');return;}
   MAINT_RECORDS[idx].item=item;
   MAINT_RECORDS[idx].dates=dates;
+  MAINT_RECORDS[idx].detail=detail;
   MAINT_RECORDS[idx].days=days;
   buildMaintSidebar();
   renderMaintContent();
@@ -1175,11 +1218,12 @@ function toggleMaintInput(){
 function addMaintRecord(){
   const item=document.getElementById('mfItem').value.trim();
   const dates=document.getElementById('mfDates').value.trim();
+  const detail=document.getElementById('mfDetail').value.trim();
   const days=parseInt(document.getElementById('mfDays').value)||1;
-  if(!item||!dates){alert('보수 항목과 날짜를 입력해 주세요.');return;}
+  if(!item||!dates){alert('보수 항목과 수리 일자를 입력해 주세요.');return;}
   const sub=currentMaintSub||'';
   const unit=currentMaintUnit||'';
-  MAINT_RECORDS.push({equip:currentMaintEquip,sub,unit,item,dates,days});
+  MAINT_RECORDS.push({equip:currentMaintEquip,sub,unit,item,dates,detail,days});
   maintInputOpen=false;
   buildMaintSidebar();
   renderMaintContent();
@@ -1199,14 +1243,11 @@ function deleteMaintRecord(idx){
 
 // ══ 메인 탭 전환 ══
 function switchMainTab(page,btn){
-  // 헤더 탭
   document.querySelectorAll('.header-tab').forEach(b=>{b.classList.remove('on');});
   document.querySelectorAll(`.header-tab[data-page="${page}"]`).forEach(b=>b.classList.add('on'));
-  // 사이드바
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('on'));
   const sn=document.getElementById('snav-'+page);
   if(sn) sn.classList.add('on');
-  // 페이지
   document.querySelectorAll('.page').forEach(p=>{p.style.display='none';});
   currentPage=page;
   if(page==='bdong'){
@@ -1218,30 +1259,22 @@ function switchMainTab(page,btn){
     document.getElementById('pageAnalysis').style.display='';
     renderAnalysis();
   }
-  // 인사이트 패널 갱신
   updateInsightPanel(page);
 }
 
-
-// ══ 전체 탭 동기화 헬퍼 ══
-// 데이터가 변경될 때마다 호출 — 열려있는 탭에 관계없이 모든 연동 갱신
 function syncAllTabs(){
   refreshAllYearTabs();
   updateYearLabels();
-  // 종합 분석 탭이 열려 있으면 즉시 갱신, 아니면 다음 진입 시 갱신됨
   if(currentPage==='analysis') renderAnalysis();
-  // 부동 관리 탭 차트도 갱신
   if(currentPage==='bdong') renderView(currentView);
 }
 
-// ══ 연도 탭 전체 갱신 (새 데이터 추가 시 호출) ══
 function refreshAllYearTabs(){
   buildYearTabs('timelineTabs', currentTimelineYear, 'switchTimelineTab');
   buildYearTabs('hbarTabs', currentHBarYear, 'switchHBarTab');
   updateYearLabels();
 }
 
-// ══ 연도 범위 동적 라벨 ══
 function getYearRange(){
   const years = getAllYears();
   if(!years.length) return '2024–2026';
@@ -1264,18 +1297,13 @@ function updateYearLabels(){
   if(el5) el5.textContent = `선광 설비 관리 통합 시스템 · ${range}`;
 }
 
-
-// ══ 인사이트 패널 갱신 ══
 function updateInsightPanel(page){
   const panel = document.getElementById('insightContent');
   if(!panel) return;
   const agg = aggregate();
   const totalH = +RECORDS.reduce((s,r)=>s+r.hour,0).toFixed(1);
   const totalCnt = RECORDS.length;
-
-  // 가장 위험한 설비 찾기
   const worst = getEquipNames().map(n=>({n, h:agg[n]?.total||0})).sort((a,b)=>b.h-a.h)[0];
-  // 주기 초과 항목 수
   const TODAY_ABS = parseAbsDay(getTodayDateStr());
   let overdue = 0;
   MAINT_RECORDS.forEach(mr=>{
@@ -1292,10 +1320,6 @@ function updateInsightPanel(page){
       <div class="insight-tip-title">⚠️ 주의 설비</div>
       <div class="insight-tip-text">${worst.n}의 부동시간이 ${worst.h.toFixed(1)}h로<br>가장 높습니다.<br>예방 정비 및 주요 부품 점검을 권장합니다.</div>
     </div>`:''}
-    ${overdue>0?`<div class="insight-tip" style="background:#FFF7ED;border-color:#FED7AA">
-      <div class="insight-tip-title" style="color:#C2410C">🔔 정비 주기 초과</div>
-      <div class="insight-tip-text" style="color:#9A3412">${overdue}개 항목이 평균 보수주기를 초과했습니다. 종합 분석 탭에서 확인하세요.</div>
-    </div>`:''}
     <div class="insight-card">
       <div class="insight-card-title">🕐 총 부동시간</div>
       <div class="insight-card-val" style="color:#185FA5">${totalH}h</div>
@@ -1308,26 +1332,9 @@ function updateInsightPanel(page){
       <div class="insight-card-title">🔧 총 보수 항목</div>
       <div class="insight-card-val" style="color:#BA7517">${MAINT_RECORDS.length}건</div>
     </div>
-    <div style="font-size:10px;color:#94a3b8;margin-top:8px;line-height:1.5">* 전년 대비: 2023-2025 기준</div>
   `;
 }
 
-// syncStatus 업데이트
-function updateSyncStatus(status){
-  const el=document.getElementById('syncStatus');
-  if(!el)return;
-  const dot=el.querySelector('.sync-dot');
-  const span=el.querySelector('span');
-  if(status==='online'||status==='saved'){
-    if(dot){dot.style.background='#0F6E56';}
-    if(span) span.textContent= status==='saved'?'저장 완료':'클라우드 연결됨';
-  }else{
-    if(dot){dot.style.background='#A32D2D';}
-    if(span) span.textContent='오프라인';
-  }
-}
-
-// ══ 연도 동적 감지 ══
 function getAllYears(){
   const ySet = new Set();
   RECORDS.forEach(r=>{
@@ -1353,7 +1360,6 @@ function buildYearTabs(containerId, currentYr, onClickFn){
     + years.map(y=>`<button class="detail-tab ${currentYr===y?'on':''}" data-yr="${y}" onclick="${onClickFn}(this)" style="${currentYr===y?'background:#1C2B4A;border-color:#1C2B4A;color:#fff':''}">${y}년</button>`).join('');
 }
 
-// ══ 타임라인 빌더 ══
 let currentTimelineYear='all';
 
 function buildTimeline(yr){
@@ -1362,10 +1368,8 @@ function buildTimeline(yr){
 
   function matchYear(dateStr, yr){
     if(yr==='all') return true;
-    const y2=yr.slice(2); // "2024"→"24", "2025"→"25"
-    // "24/01/08" 형식
+    const y2=yr.slice(2);
     if(dateStr.startsWith(y2+'/')) return true;
-    // "2024.03.19" 형식
     if(dateStr.startsWith(yr+'.') || dateStr.startsWith(yr+'-') || dateStr.startsWith(yr+'/')) return true;
     return false;
   }
@@ -1390,7 +1394,7 @@ function buildTimeline(yr){
   if(timelineChart){timelineChart.destroy();timelineChart=null;}
   const tCtx=document.getElementById('cTimeline')?.getContext('2d');
   if(!tCtx) return;
-  const label=yr==='all'?'24-26 종합':yr+'년';
+  const label=yr==='all'?'종합':yr+'년';
   timelineChart=new Chart(tCtx,{
     data:{labels:MLABELS,datasets:[
       {type:'bar',label:`부동시간(h) - ${label}`,data:bdByMonth,
@@ -1406,10 +1410,8 @@ function buildTimeline(yr){
       },
       scales:{
         x:{grid:{display:false},ticks:{font:{size:10}}},
-        y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},callback:v=>v+'h'},
-           title:{display:true,text:'부동시간(h)',font:{size:9}}},
-        y2:{position:'right',grid:{display:false},ticks:{font:{size:10},stepSize:1},
-            title:{display:true,text:'보수건수',font:{size:9}}}
+        y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},callback:v=>v+'h'},title:{display:true,text:'부동시간(h)',font:{size:9}}},
+        y2:{position:'right',grid:{display:false},ticks:{font:{size:10},stepSize:1},title:{display:true,text:'보수건수',font:{size:9}}}
       }}
   });
 }
@@ -1425,10 +1427,8 @@ function switchTimelineTab(btn){
   buildTimeline(btn.dataset.yr);
 }
 
-// ══ HBar 빌더 (연도 필터) ══
 function buildHBar(yr){
   const EQUIPS = getEquipNames();
-
   function matchYearRecord(dateStr, yr){
     if(yr==='all') return true;
     const y2=yr.slice(2);
@@ -1483,7 +1483,6 @@ function buildHBar(yr){
   });
 }
 
-// hbar 탭 전환
 let currentHBarYear='all';
 function switchHBarTab(btn){
   document.querySelectorAll('#hbarTabs .detail-tab').forEach(b=>{
@@ -1496,13 +1495,9 @@ function switchHBarTab(btn){
   buildHBar(btn.dataset.yr);
 }
 
-// ══════════════════════════════════════════════
-// ③ 종합 분석 로직
-// ══════════════════════════════════════════════
 let bubbleChart=null, timelineChart=null;
 
 function parseYM(dateStr){
-  // "24/01/08" → {y:2024,m:1}  /  "2024.03.19" → {y:2024,m:3}
   dateStr = dateStr.trim();
   let m = dateStr.match(/^(\d{2})\/(\d{2})/);
   if(m) return {y:2000+parseInt(m[1]),mo:parseInt(m[2])};
@@ -1512,7 +1507,6 @@ function parseYM(dateStr){
 }
 
 function parseAbsDay(dateStr){
-  // return days-since-2024-01-01 (approx)
   dateStr = dateStr.trim();
   let m = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{2})/);
   if(m){
@@ -1527,7 +1521,6 @@ function parseAbsDay(dateStr){
   return null;
 }
 
-// 오늘 날짜를 "YY/MM/DD" 형식 문자열로 반환 (parseAbsDay와 호환)
 function getTodayDateStr(){
   const now = new Date();
   const yy = String(now.getFullYear()).slice(2);
@@ -1537,7 +1530,6 @@ function getTodayDateStr(){
 }
 
 function getMaintDateList(datesStr){
-  // Parse dates string into array of {y,mo} objects
   const parts = datesStr.split('/').map(d=>d.trim()).filter(d=>d.length>2);
   return parts.map(p=>parseYM(p)).filter(Boolean);
 }
@@ -1548,12 +1540,10 @@ function getMaintAbsDays(datesStr){
 }
 
 function renderAnalysis(){
-  // 연도 탭 동적 갱신
   buildYearTabs('timelineTabs', currentTimelineYear, 'switchTimelineTab');
   buildYearTabs('hbarTabs', currentHBarYear, 'switchHBarTab');
   const EQUIPS = getEquipNames();
 
-  // ── per-equip stats
   const stats = EQUIPS.map(name=>{
     const color = EQUIP_META[name]?.color||'#888';
     const light = EQUIP_META[name]?.light||'#eee';
@@ -1566,14 +1556,13 @@ function renderAnalysis(){
     return {name,color,light,bdH,bdCnt,mCnt,mDays};
   }).filter(s=>s.bdH>0||s.mCnt>0);
 
-  // ── ① Cards
   const maxBdH = Math.max(...stats.map(s=>s.bdH),1);
   document.getElementById('analysisCards').innerHTML = stats.map(s=>{
     const riskScore = Math.round((s.bdH/maxBdH)*50 + (s.mCnt/Math.max(...stats.map(x=>x.mCnt),1))*50);
     const riskColor = riskScore>=70?'#A32D2D':riskScore>=40?'#854F0B':'#27500A';
     const riskBg    = riskScore>=70?'#FCEBEB':riskScore>=40?'#FAEEDA':'#EAF3DE';
     const riskLabel = riskScore>=70?'위험':'중간';
-    return `<div style="background:#fff;border-radius:12px;padding:14px;border:1px solid #e2e8f0;border-top:3px solid ${s.color};cursor:pointer;transition:box-shadow .15s" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,.10)'" onmouseout="this.style.boxShadow=''" onclick="openAnalysisDetail('${s.name}')">
+    return `<div style="background:#fff;border-radius:12px;padding:14px;border:1px solid #e2e8f0;border-top:3px solid ${s.color};cursor:pointer;transition:box-shadow .15s" onclick="openAnalysisDetail('${s.name}')">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <span style="font-size:13px;font-weight:700;color:${s.color}">${s.name}</span>
         <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:${riskBg};color:${riskColor}">${riskLabel}</span>
@@ -1599,22 +1588,18 @@ function renderAnalysis(){
     </div>`;
   }).join('');
 
-  // ── ② 설비별 부동·보수 콤보 (연도 탭 포함)
   currentHBarYear='all';
   buildYearTabs('hbarTabs','all','switchHBarTab');
   buildHBar('all');
 
-  // ── ③ 월별 타임라인 (연도 탭 포함)
   currentTimelineYear='all';
   buildYearTabs('timelineTabs','all','switchTimelineTab');
   buildTimeline('all');
 
-  // ── ⑤ 보수 효과 분석 — 데이터 빌드 후 현재 모드로 렌더
   buildEffectData();
   renderEffectTable(currentEffectMode);
 }
 
-// ══ 보수 효과 분석: 데이터 빌드 + 3가지 표시 모드 ══
 let _effectRows = [];
 let currentEffectMode = 'ratio';
 
@@ -1625,14 +1610,12 @@ function buildEffectData(){
     const absDays = getMaintAbsDays(mr.dates).filter(v=>v!==null).sort((a,b)=>a-b);
     if(!absDays.length) return;
     const equip = mr.equip;
-
     let avgCycle = null;
     if(absDays.length>=2){
       const gaps=[];
       for(let i=1;i<absDays.length;i++) gaps.push(absDays[i]-absDays[i-1]);
       avgCycle = Math.round(gaps.reduce((s,g)=>s+g,0)/gaps.length);
     }
-
     const lastMaintDay = Math.max(...absDays);
     const elapsedDays = TODAY_ABS!==null ? (TODAY_ABS - lastMaintDay) : null;
     const ratio = (avgCycle && elapsedDays!==null) ? elapsedDays/avgCycle : null;
@@ -1668,241 +1651,101 @@ function switchEffectTab(btn){
 }
 
 function renderEffectTable(mode){
-  const subEl = document.getElementById('effectSubtitle');
   const container = document.getElementById('analysisEffect');
   if(!container) return;
-
   if(!_effectRows.length){
     container.innerHTML = '<div class="empty-msg" style="padding:32px">분석할 데이터가 부족합니다</div>';
     return;
   }
-
-  if(mode==='ratio'){
-    if(subEl) subEl.textContent = '평균 보수주기 대비 경과일 비교 — 정비 시점이 임박했는지 한눈에 확인 (24~26년 종합)';
-    const sorted = [..._effectRows].sort((a,b)=>{
-      const ar = a.ratio===null ? -1 : a.ratio;
-      const br = b.ratio===null ? -1 : b.ratio;
-      return br-ar;
-    }).slice(0,12);
-    container.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
-      <thead><tr style="background:#f8f9fc">
-        <th style="padding:9px 12px;text-align:left;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">설비</th>
-        <th style="padding:9px 12px;text-align:left;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">보수 항목</th>
-        <th style="padding:9px 12px;text-align:center;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">평균 보수주기</th>
-        <th style="padding:9px 12px;text-align:center;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">최종 보수 이후<br>경과 일자</th>
-        <th style="padding:9px 12px;text-align:center;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">상태</th>
-      </tr></thead><tbody>
-      ${sorted.map(r=>{
-        const cycleText = r.avgCycle!==null ? r.avgCycle+'일' : '—';
-        const elapsedText = r.elapsedDays!==null ? r.elapsedDays+'일' : '—';
-        const s = getStatusBadge(r.avgCycle, r.elapsedDays);
-        return `<tr style="border-bottom:0.5px solid #f1f5f9">
-          <td style="padding:8px 12px"><span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:${r.light};color:${r.color}">${r.equip}</span></td>
-          <td style="padding:8px 12px;color:#334155">${r.item}</td>
-          <td style="padding:8px 12px;text-align:center;font-weight:600;color:#185FA5">${cycleText}</td>
-          <td style="padding:8px 12px;text-align:center;font-weight:600;color:#A32D2D">${elapsedText}</td>
-          <td style="padding:8px 12px;text-align:center"><span style="font-size:11px;font-weight:600;padding:2px 9px;border-radius:8px;background:${s.bg};color:${s.color}">${s.label}</span></td>
-        </tr>`;
-      }).join('')}
-      </tbody></table></div>`;
-
-  } else if(mode==='absolute'){
-    if(subEl) subEl.textContent = '최종 보수 이후 경과일이 긴 순 — 평균주기와 무관하게 절대적으로 오래 방치된 항목 (24~26년 종합)';
-    const sorted = [..._effectRows].filter(r=>r.elapsedDays!==null)
-      .sort((a,b)=>b.elapsedDays-a.elapsedDays).slice(0,12);
-    container.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
-      <thead><tr style="background:#f8f9fc">
-        <th style="padding:9px 12px;text-align:left;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">설비</th>
-        <th style="padding:9px 12px;text-align:left;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">보수 항목</th>
-        <th style="padding:9px 12px;text-align:center;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">최종 보수 이후<br>경과 일자</th>
-        <th style="padding:9px 12px;text-align:center;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">평균 보수주기</th>
-        <th style="padding:9px 12px;text-align:center;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">상태</th>
-      </tr></thead><tbody>
-      ${sorted.map(r=>{
-        const cycleText = r.avgCycle!==null ? r.avgCycle+'일' : '—';
-        const s = getStatusBadge(r.avgCycle, r.elapsedDays);
-        return `<tr style="border-bottom:0.5px solid #f1f5f9">
-          <td style="padding:8px 12px"><span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:${r.light};color:${r.color}">${r.equip}</span></td>
-          <td style="padding:8px 12px;color:#334155">${r.item}</td>
-          <td style="padding:8px 12px;text-align:center;font-weight:700;color:#A32D2D">${r.elapsedDays}일</td>
-          <td style="padding:8px 12px;text-align:center;font-weight:600;color:#185FA5">${cycleText}</td>
-          <td style="padding:8px 12px;text-align:center"><span style="font-size:11px;font-weight:600;padding:2px 9px;border-radius:8px;background:${s.bg};color:${s.color}">${s.label}</span></td>
-        </tr>`;
-      }).join('')}
-      </tbody></table></div>`;
-
-  } else if(mode==='byEquip'){
-    if(subEl) subEl.textContent = '설비를 클릭하면 해당 설비의 보수 항목만 표시됩니다 (24~26년 종합)';
-    const groups = {};
-    _effectRows.forEach(r=>{
-      if(!groups[r.equip]) groups[r.equip]=[];
-      groups[r.equip].push(r);
-    });
-    const equipOrder = Object.keys(groups);
-
-    // 선택된 설비가 없거나 더 이상 존재하지 않으면 첫번째로 설정
-    if(!currentEffectEquip || !groups[currentEffectEquip]){
-      currentEffectEquip = equipOrder[0] || null;
-    }
-
-    // 설비 선택 칩 목록 (전체 설비 표시, 줄바꿈 허용)
-    const chipsHtml = `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;max-width:100%">
-      ${equipOrder.map(equip=>{
-        const color = EQUIP_META[equip]?.color||'#888';
-        const light = EQUIP_META[equip]?.light||'#eee';
-        const isOn = currentEffectEquip===equip;
-        return `<button onclick="selectEffectEquip('${equip}')" style="font-size:11px;padding:5px 13px;border-radius:20px;border:1px solid ${isOn?color:'#e2e8f0'};background:${isOn?color:'#fff'};color:${isOn?'#fff':color};cursor:pointer;font-weight:600;transition:all .15s">${equip} <span style="opacity:.75">(${groups[equip].length})</span></button>`;
-      }).join('')}
-    </div>`;
-
-    if(!currentEffectEquip){
-      container.innerHTML = chipsHtml + '<div class="empty-msg" style="padding:24px">설비를 선택해주세요</div>';
-      return;
-    }
-
-    const rows = groups[currentEffectEquip].sort((a,b)=>{
-      const ar=a.ratio===null?-1:a.ratio, br=b.ratio===null?-1:b.ratio;
-      return br-ar;
-    });
-    const color = EQUIP_META[currentEffectEquip]?.color||'#888';
-    const light = EQUIP_META[currentEffectEquip]?.light||'#eee';
-
-    container.innerHTML = chipsHtml + `<div>
-        <div style="font-size:12px;font-weight:700;color:${color};background:${light};display:inline-block;padding:4px 12px;border-radius:8px;margin-bottom:10px">${currentEffectEquip} (${rows.length}건)</div>
-        <table style="width:100%;border-collapse:collapse;font-size:12px">
-          <thead><tr style="background:#f8f9fc">
-            <th style="padding:8px 12px;text-align:left;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569;width:50%">보수 항목</th>
-            <th style="padding:8px 12px;text-align:center;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">평균 보수주기</th>
-            <th style="padding:8px 12px;text-align:center;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">경과 일자</th>
-            <th style="padding:8px 12px;text-align:center;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">상태</th>
-          </tr></thead><tbody>
-          ${rows.map(r=>{
-            const cycleText = r.avgCycle!==null ? r.avgCycle+'일' : '—';
-            const elapsedText = r.elapsedDays!==null ? r.elapsedDays+'일' : '—';
-            const s = getStatusBadge(r.avgCycle, r.elapsedDays);
-            return `<tr style="border-bottom:0.5px solid #f1f5f9">
-              <td style="padding:8px 12px;color:#334155">${r.item}</td>
-              <td style="padding:8px 12px;text-align:center;font-weight:600;color:#185FA5">${cycleText}</td>
-              <td style="padding:8px 12px;text-align:center;font-weight:600;color:#A32D2D">${elapsedText}</td>
-              <td style="padding:8px 12px;text-align:center"><span style="font-size:11px;font-weight:600;padding:2px 9px;border-radius:8px;background:${s.bg};color:${s.color}">${s.label}</span></td>
-            </tr>`;
-          }).join('')}
-          </tbody></table>
-      </div>`;
-  }
+  const sorted = [..._effectRows].sort((a,b)=>(b.ratio||0)-(a.ratio||0)).slice(0,12);
+  container.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
+    <thead><tr style="background:#f8f9fc">
+      <th style="padding:9px 12px;text-align:left;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">설비</th>
+      <th style="padding:9px 12px;text-align:left;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">보수 항목</th>
+      <th style="padding:9px 12px;text-align:center;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">평균 보수주기</th>
+      <th style="padding:9px 12px;text-align:center;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">최종 보수 이후 경과일</th>
+      <th style="padding:9px 12px;text-align:center;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569">상태</th>
+    </tr></thead><tbody>
+    ${sorted.map(r=>{
+      const s = getStatusBadge(r.avgCycle, r.elapsedDays);
+      return `<tr style="border-bottom:0.5px solid #f1f5f9">
+        <td style="padding:8px 12px"><span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:${r.light};color:${r.color}">${r.equip}</span></td>
+        <td style="padding:8px 12px;color:#334155">${r.item}</td>
+        <td style="padding:8px 12px;text-align:center;font-weight:600;color:#185FA5">${r.avgCycle?r.avgCycle+'일':'—'}</td>
+        <td style="padding:8px 12px;text-align:center;font-weight:600;color:#A32D2D">${r.elapsedDays?r.elapsedDays+'일':'—'}</td>
+        <td style="padding:8px 12px;text-align:center"><span style="font-size:11px;font-weight:600;padding:2px 9px;border-radius:8px;background:${s.bg};color:${s.color}">${s.label}</span></td>
+      </tr>`;
+    }).join('')}
+    </tbody></table></div>`;
 }
 
-let currentEffectEquip = null;
-function selectEffectEquip(name){
-  currentEffectEquip = name;
-  renderEffectTable('byEquip');
-}
+// ══ 보수 항목별 발생 건수 차트 렌더링 (보수항목 item 기준 집계) ══
+let maintChart=null;
 
+function renderMaintChart(){
+  const color=MAINT_COLORS[currentMaintEquip]||'#185FA5';
+  const records=MAINT_RECORDS.filter(r=>r.equip===currentMaintEquip);
+  const subRecs=currentMaintSub?records.filter(r=>r.sub===currentMaintSub):records;
+  const finalRecs=currentMaintUnit?subRecs.filter(r=>r.unit===currentMaintUnit):subRecs;
+  const totalCnt=finalRecs.length;
+  const totalDays=finalRecs.reduce((s,r)=>s+r.days,0);
+  const avgDays=totalCnt>0?(totalDays/totalCnt).toFixed(1):0;
+  
+  const kv1=document.getElementById('mKv1');
+  const kv2=document.getElementById('mKv2');
+  const kv3=document.getElementById('mKv3');
+  if(kv1)kv1.textContent=totalCnt+'건';
+  if(kv2)kv2.textContent=totalDays+'일';
+  if(kv3)kv3.textContent=avgDays+'일';
+  
+  const chartEl=document.getElementById('maintChartArea');
+  if(!chartEl)return;
 
-
-// ══ 설비 상세 분석 팝업 ══
-let detailBdChart=null, detailMtChart=null;
-
-function openAnalysisDetail(name){
-  const color = EQUIP_META[name]?.color||'#185FA5';
-  const light = EQUIP_META[name]?.light||'#E6F1FB';
-
-  // 집계
-  const agg = aggregate();
-  const s = agg[name];
-  const mRecs = MAINT_RECORDS.filter(r=>r.equip===name);
-  const mCnt = mRecs.reduce((s,r)=>s+getMaintDateList(r.dates).length,0);
-  const mDays = mRecs.reduce((s,r)=>s+r.days,0);
-
-  // 제목
-  document.getElementById('detailModalTitle').innerHTML =
-    `<span style="color:${color}">${name}</span> 상세 분석`;
-
-  // KPI
-  document.getElementById('detailModalKpi').innerHTML = [
-    {label:'총 부동시간', val:s.total.toFixed(1)+'h', c:color, bg:light},
-    {label:'부동 건수',   val:s.cnt+'건',             c:color, bg:light},
-    {label:'보수 횟수',   val:mCnt+'회',              c:'#334155', bg:'#f8f9fc'},
-    {label:'보수 소요일', val:mDays+'일',             c:'#334155', bg:'#f8f9fc'},
-  ].map(k=>`<div style="background:${k.bg};border-radius:8px;padding:10px 12px;text-align:center">
-    <div style="font-size:9px;color:#94a3b8;margin-bottom:3px">${k.label}</div>
-    <div style="font-size:18px;font-weight:700;color:${k.c}">${k.val}</div>
-  </div>`).join('');
-
-  // 부동 원인 차트
-  if(detailBdChart){detailBdChart.destroy();detailBdChart=null;}
-  const cats = s.catArr.slice(0,8);
-  requestAnimationFrame(()=>{
-    const ctx1 = document.getElementById('detailBdChart')?.getContext('2d');
-    if(ctx1 && cats.length){
-      detailBdChart = new Chart(ctx1,{
-        type:'bar',
-        data:{
-          labels:cats.map(c=>c.name.length>16?c.name.slice(0,15)+'…':c.name),
-          datasets:[{
-            data:cats.map(c=>+c.h.toFixed(1)),
-            backgroundColor:cats.map((_,i)=>color+(Math.round(Math.max(0.4,1-i*0.08)*255).toString(16).padStart(2,'0'))),
-            borderRadius:4,borderSkipped:false
-          }]
-        },
-        options:{responsive:true,maintainAspectRatio:false,
-          plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.y.toFixed(1)}h`}}},
-          scales:{
-            x:{grid:{display:false},ticks:{font:{size:9},maxRotation:30}},
-            y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:9},callback:v=>v+'h'}}
-          }}
-      });
-    }
-
-    // 보수 항목별 횟수 차트
-    if(detailMtChart){detailMtChart.destroy();detailMtChart=null;}
-    const mtMap={};
-    mRecs.forEach(r=>{
-      const cnt=getMaintDateList(r.dates).length;
-      mtMap[r.item]=(mtMap[r.item]||0)+cnt;
-    });
-    const mtSorted=Object.entries(mtMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
-    const ctx2 = document.getElementById('detailMtChart')?.getContext('2d');
-    if(ctx2 && mtSorted.length){
-      detailMtChart = new Chart(ctx2,{
-        type:'bar',
-        data:{
-          labels:mtSorted.map(d=>d[0].length>16?d[0].slice(0,15)+'…':d[0]),
-          datasets:[{
-            data:mtSorted.map(d=>d[1]),
-            backgroundColor:color+'99',borderRadius:4,borderSkipped:false
-          }]
-        },
-        options:{responsive:true,maintainAspectRatio:false,
-          plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.y}회`}}},
-          scales:{
-            x:{grid:{display:false},ticks:{font:{size:9},maxRotation:30}},
-            y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:9},stepSize:1}}
-          }}
-      });
-    }
-
-    // 보수 이력 테이블
-    document.getElementById('detailMtTable').innerHTML = mRecs.length
-      ? `<table style="width:100%;border-collapse:collapse;font-size:11px">
-          <thead><tr style="background:#f1f5f9">
-            <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #e2e8f0;color:#475569;font-weight:600">보수 항목</th>
-            <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #e2e8f0;color:#475569;font-weight:600">날짜</th>
-            <th style="padding:6px 10px;text-align:center;border-bottom:1px solid #e2e8f0;color:#475569;font-weight:600">소요일</th>
-          </tr></thead>
-          <tbody>${mRecs.map(r=>`<tr style="border-bottom:0.5px solid #f1f5f9">
-            <td style="padding:6px 10px;color:#334155;font-weight:500">${r.item}</td>
-            <td style="padding:6px 10px"><div style="display:flex;flex-wrap:wrap;gap:3px">${r.dates.split('/').map(d=>d.trim()).filter(d=>d.length>2).map(d=>`<span style="font-size:10px;background:#f1f5f9;border-radius:4px;padding:1px 6px;color:#475569">${d}</span>`).join('')}</div></td>
-            <td style="padding:6px 10px;text-align:center"><span style="font-size:10px;font-weight:700;background:${light};color:${color};border-radius:6px;padding:2px 7px">${r.days}일</span></td>
-          </tr>`).join('')}</tbody>
-        </table>`
-      : '<div style="padding:20px;text-align:center;color:#94a3b8">보수 이력 없음</div>';
+  // 보수 항목(item) 기준으로만 차트 발생 건수 집계
+  const itemMap={};
+  finalRecs.forEach(r=>{
+    const dateParts=r.dates.split(/[/,]/).map(d=>d.trim()).filter(d=>d.length>2);
+    itemMap[r.item]=(itemMap[r.item]||0)+dateParts.length;
   });
-
-  openModal('modalDetail');
+  
+  const sorted=Object.entries(itemMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const labels=sorted.map(d=>d[0].length>16?d[0].slice(0,15)+'...':d[0]);
+  const vals=sorted.map(d=>d[1]);
+  
+  if(maintChart){maintChart.destroy();maintChart=null;}
+  if(!sorted.length)return;
+  
+  maintChart=new Chart(chartEl.getContext('2d'),{
+    data:{labels,datasets:[{type:'bar',data:vals,backgroundColor:sorted.map((_,i)=>{
+      const alpha=Math.max(0.4,1-i*0.07);
+      return color+(Math.round(alpha*255).toString(16).padStart(2,'0'));
+    }),borderRadius:4,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#1e293b',titleColor:'#e2e8f0',bodyColor:'#94a3b8',callbacks:{label:c=>c.parsed.y+'건'}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#64748b',font:{size:10},maxRotation:30}},
+              y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#64748b',font:{size:10},stepSize:1}}}}
+  });
 }
 
-// ══ 설비 추가 모달 ══
+const _origRMC=renderMaintContent;
+renderMaintContent=function(){
+  _origRMC();
+  const mc=document.getElementById('maintContent');
+  if(!mc)return;
+  const color=MAINT_COLORS[currentMaintEquip]||'#185FA5';
+  const sec=document.createElement('div');
+  sec.className='maint-chart-section';
+  sec.innerHTML=`<div class="maint-kpi-row">
+    <div class="maint-kpi"><div class="maint-kpi-label">총 보수 건수</div><div class="maint-kpi-val" id="mKv1" style="color:${color}">-</div></div>
+    <div class="maint-kpi"><div class="maint-kpi-label">총 ${MAINT_COL_HEADERS[3]}</div><div class="maint-kpi-val" id="mKv2" style="color:${color}">-</div></div>
+    <div class="maint-kpi"><div class="maint-kpi-label">평균 ${MAINT_COL_HEADERS[3]}</div><div class="maint-kpi-val" id="mKv3" style="color:${color}">-</div></div>
+  </div>
+  <div class="maint-chart-title">보수 항목별 발생 건수 (상위 8개)</div>
+  <div style="position:relative;width:100%;height:180px"><canvas id="maintChartArea"></canvas></div>`;
+  mc.insertBefore(sec,mc.firstChild);
+  requestAnimationFrame(()=>renderMaintChart());
+};
+
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 
@@ -1944,112 +1787,19 @@ function addMaintEquip(){
   syncAllTabs();
 }
 
-// ══ 보수이력 차트 ══
-let maintChart=null;
-
-function renderMaintChart(){
-  const color=MAINT_COLORS[currentMaintEquip]||'#185FA5';
-  const records=MAINT_RECORDS.filter(r=>r.equip===currentMaintEquip);
-  const subRecs=currentMaintSub?records.filter(r=>r.sub===currentMaintSub):records;
-  const finalRecs=currentMaintUnit?subRecs.filter(r=>r.unit===currentMaintUnit):subRecs;
-  const totalCnt=finalRecs.length;
-  const totalDays=finalRecs.reduce((s,r)=>s+r.days,0);
-  const avgDays=totalCnt>0?(totalDays/totalCnt).toFixed(1):0;
-  const kv1=document.getElementById('mKv1');
-  const kv2=document.getElementById('mKv2');
-  const kv3=document.getElementById('mKv3');
-  if(kv1)kv1.textContent=totalCnt+'건';
-  if(kv2)kv2.textContent=totalDays+'일';
-  if(kv3)kv3.textContent=avgDays+'일';
-  const chartEl=document.getElementById('maintChartArea');
-  if(!chartEl)return;
-  // 날짜 구분자(/ 또는 ,) 기반으로 실제 발생 건수 카운팅
-  const itemMap={};
-  finalRecs.forEach(r=>{
-    const dateParts=r.dates.split(/[/,]/).map(d=>d.trim()).filter(d=>d.length>2);
-    itemMap[r.item]=(itemMap[r.item]||0)+dateParts.length;
-  });
-  const sorted=Object.entries(itemMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  const labels=sorted.map(d=>d[0].length>16?d[0].slice(0,15)+'...':d[0]);
-  const vals=sorted.map(d=>d[1]);
-  if(maintChart){maintChart.destroy();maintChart=null;}
-  if(!sorted.length)return;
-  maintChart=new Chart(chartEl.getContext('2d'),{
-    data:{labels,datasets:[{type:'bar',data:vals,backgroundColor:sorted.map((_,i)=>{
-      const alpha=Math.max(0.4,1-i*0.07);
-      return color+(Math.round(alpha*255).toString(16).padStart(2,'0'));
-    }),borderRadius:4,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{backgroundColor:'#1e293b',titleColor:'#e2e8f0',bodyColor:'#94a3b8',callbacks:{label:c=>c.parsed.y+'건'}}},
-      scales:{x:{grid:{display:false},ticks:{color:'#64748b',font:{size:10},maxRotation:30}},
-              y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#64748b',font:{size:10},stepSize:1}}}}
-  });
-}
-
-const _origRMC=renderMaintContent;
-renderMaintContent=function(){
-  _origRMC();
-  const mc=document.getElementById('maintContent');
-  if(!mc)return;
-  const color=MAINT_COLORS[currentMaintEquip]||'#185FA5';
-  const sec=document.createElement('div');
-  sec.className='maint-chart-section';
-  sec.innerHTML=`<div class="maint-kpi-row">
-    <div class="maint-kpi"><div class="maint-kpi-label">총 보수 건수</div><div class="maint-kpi-val" id="mKv1" style="color:${color}">-</div></div>
-    <div class="maint-kpi"><div class="maint-kpi-label" id="mKpiLabel2">총 ${MAINT_COL_HEADERS[2]}</div><div class="maint-kpi-val" id="mKv2" style="color:${color}">-</div></div>
-    <div class="maint-kpi"><div class="maint-kpi-label" id="mKpiLabel3">평균 ${MAINT_COL_HEADERS[2]}</div><div class="maint-kpi-val" id="mKv3" style="color:${color}">-</div></div>
-  </div>
-  <div class="maint-chart-title">보수 항목별 발생 건수 (상위 8개)</div>
-  <div style="position:relative;width:100%;height:180px"><canvas id="maintChartArea"></canvas></div>`;
-  mc.insertBefore(sec,mc.firstChild);
-  requestAnimationFrame(()=>renderMaintChart());
-};
-
-window.addEventListener('click',e=>{
-  document.querySelectorAll('.modal-overlay').forEach(el=>{if(e.target===el)el.classList.remove('open');});
-});
-
-// ══ 컬럼 헤더 편집 ══
-function editColHeader(th, idx){
-  const current = MAINT_COL_HEADERS[idx];
-  const input = document.createElement('input');
-  input.value = current;
-  input.style.cssText='width:100%;padding:2px 6px;border:1.5px solid #185FA5;border-radius:4px;font-size:12px;font-weight:600;color:#1a1a2e;background:#fff;outline:none';
-  th.innerHTML='';
-  th.appendChild(input);
-  input.focus();
-  input.select();
-  function save(){
-    const val=input.value.trim()||current;
-    MAINT_COL_HEADERS[idx]=val;
-    renderMaintContent(); // re-render to apply new header everywhere
-  }
-  input.addEventListener('blur',save);
-  input.addEventListener('keydown',e=>{
-    if(e.key==='Enter'){input.blur();}
-    if(e.key==='Escape'){MAINT_COL_HEADERS[idx]=current;renderMaintContent();}
-  });
-}
-
-// ══ 우클릭 컨텍스트 메뉴 ══
 let ctxType=null, ctxTarget=null;
 const PROTECTED_BDONG=['설비별 최대 원인','전체 설비'];
-const PROTECTED_MAINT=[];
 
 function openCtxMenu(e, type, name){
   e.preventDefault();
   e.stopPropagation();
-  // 고정 탭은 삭제 불가
   if(type==='bdong' && PROTECTED_BDONG.includes(name)) return;
   ctxType=type; ctxTarget=name;
   const menu=document.getElementById('ctxMenu');
   const label=document.getElementById('ctxDeleteBtn');
   label.textContent='🗑  "'+name+'" 삭제';
-  // 화면 밖 넘침 방지
-  const mx=Math.min(e.clientX, window.innerWidth-160);
-  const my=Math.min(e.clientY, window.innerHeight-60);
-  menu.style.left=mx+'px';
-  menu.style.top=my+'px';
+  menu.style.left=Math.min(e.clientX, window.innerWidth-160)+'px';
+  menu.style.top=Math.min(e.clientY, window.innerHeight-60)+'px';
   menu.classList.add('open');
 }
 
@@ -2057,31 +1807,24 @@ function ctxDelete(){
   const menu=document.getElementById('ctxMenu');
   menu.classList.remove('open');
   if(!ctxTarget) return;
-  if(!confirm(`"${ctxTarget}" 설비를 삭제하시겠습니까?\n관련 데이터도 모두 삭제됩니다.`)) return;
+  if(!confirm(`"${ctxTarget}" 설비를 삭제하시겠습니까?`)) return;
 
   if(ctxType==='bdong'){
-    // EQUIP_META에서 제거
     delete EQUIP_META[ctxTarget];
     delete TAB_BG[ctxTarget];
-    // 관련 부동 이력 제거
     RECORDS=RECORDS.filter(r=>r.equip!==ctxTarget);
-    // 드롭다운에서 제거
     const sel=document.getElementById('fEquip');
     Array.from(sel.options).forEach(o=>{if(o.value===ctxTarget)sel.removeChild(o);});
-    // 현재 뷰가 삭제된 설비면 초기화
     if(currentView===ctxTarget) currentView='설비별 최대 원인';
     buildSubTabs();
     renderView(currentView);
     syncAllTabs();
-
   }else if(ctxType==='maint'){
     const idx=MAINT_EQUIPS.indexOf(ctxTarget);
     if(idx>=0) MAINT_EQUIPS.splice(idx,1);
     delete MAINT_COLORS[ctxTarget];
     delete MAINT_LIGHTS[ctxTarget];
-    // 관련 보수 이력 제거
     MAINT_RECORDS=MAINT_RECORDS.filter(r=>r.equip!==ctxTarget);
-    // 현재 선택 설비가 삭제됐으면 첫번째로 이동
     if(currentMaintEquip===ctxTarget){
       currentMaintEquip=MAINT_EQUIPS[0]||'';
       currentMaintSub=null; currentMaintUnit=null;
@@ -2094,52 +1837,19 @@ function ctxDelete(){
   ctxType=null; ctxTarget=null;
 }
 
-// 다른 곳 클릭 시 메뉴 닫기
-document.addEventListener('click',()=>{
+document.addEventListener('click',e=>{
   document.getElementById('ctxMenu')?.classList.remove('open');
+  document.querySelectorAll('.modal-overlay').forEach(el=>{if(e.target===el)el.classList.remove('open');});
 });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape') document.getElementById('ctxMenu')?.classList.remove('open');
 });
 
-// ══ 초기화 ══
 loadSavedData();
 buildSubTabs();
 renderView('설비별 최대 원인');
 updateYearLabels();
 updateInsightPanel('bdong');
 </script>
-
-<!-- 우클릭 컨텍스트 메뉴 -->
-<div class="ctx-menu" id="ctxMenu">
-  <div class="ctx-menu-item danger" id="ctxDeleteBtn" onclick="ctxDelete()">🗑 설비 삭제</div>
-</div>
-<!-- 설비 상세 분석 팝업 -->
-<div class="modal-overlay" id="modalDetail" style="align-items:flex-start;padding:40px 20px;overflow-y:auto">
-  <div class="modal-box" style="width:720px;max-width:95vw;max-height:85vh;overflow-y:auto">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div id="detailModalTitle" style="font-size:16px;font-weight:700;color:#1a1a2e"></div>
-      <button onclick="closeModal('modalDetail')" style="background:none;border:none;font-size:18px;cursor:pointer;color:#64748b;padding:4px 8px">✕</button>
-    </div>
-    <!-- KPI -->
-    <div id="detailModalKpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px"></div>
-    <!-- 차트: 부동 원인 파레토 -->
-    <div style="background:#f8f9fc;border-radius:10px;padding:14px;margin-bottom:14px">
-      <div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:10px">부동 원인별 시간 (h)</div>
-      <div style="position:relative;height:180px"><canvas id="detailBdChart"></canvas></div>
-    </div>
-    <!-- 차트: 보수 이력 -->
-    <div style="background:#f8f9fc;border-radius:10px;padding:14px;margin-bottom:14px">
-      <div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:10px">보수 항목별 횟수</div>
-      <div style="position:relative;height:160px"><canvas id="detailMtChart"></canvas></div>
-    </div>
-    <!-- 보수 이력 테이블 -->
-    <div style="background:#f8f9fc;border-radius:10px;padding:14px">
-      <div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:10px">보수 이력 목록</div>
-      <div id="detailMtTable" style="max-height:200px;overflow-y:auto"></div>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
