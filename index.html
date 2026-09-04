@@ -8,7 +8,6 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-  // ※ 본인의 Firebase 콘솔 설정 객체(firebaseConfig)를 여기에 넣어주세요.
   const firebaseConfig = {
     apiKey: "AIzaSyCHWtPG64bUCx8wYQun767naxzQ2P46tS8",
     authDomain: "maintenance-4b9ad.firebaseapp.com",
@@ -148,8 +147,10 @@ tbody td{padding:7px 10px;border-bottom:1px solid #f8f9fc;color:#334155;vertical
 .days-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
 .date-chips{display:flex;flex-wrap:wrap;gap:3px}
 .date-chip{font-size:10px;color:#475569;background:#f1f5f9;border-radius:5px;padding:1px 6px;white-space:nowrap}
-.maint-add-row{display:flex;justify-content:flex-end;margin-bottom:10px}
+.maint-add-row{display:flex;justify-content:flex-end;gap:8px;margin-bottom:10px}
 .btn-maint-add{font-size:11px;padding:5px 14px;background:#185FA5;color:#fff;border:none;border-radius:7px;cursor:pointer;font-weight:500}
+.btn-maint-bulk{font-size:11px;padding:5px 14px;background:#0F6E56;color:#fff;border:none;border-radius:7px;cursor:pointer;font-weight:500}
+.btn-maint-bulk:hover{background:#085041}
 .maint-input-area{background:#f8f9fc;border-radius:10px;padding:14px;margin-bottom:14px;display:none;border:1px solid #e2e8f0}
 .maint-input-area.open{display:block}
 .btn-maint-edit{font-size:11px;padding:2px 8px;border-radius:5px;background:#E6F1FB;color:#185FA5;border:none;cursor:pointer;margin-right:3px}
@@ -164,7 +165,7 @@ tbody td{padding:7px 10px;border-bottom:1px solid #f8f9fc;color:#334155;vertical
 .btn-add-equip{font-size:11px;padding:5px 12px;border-radius:20px;background:#fff;color:#185FA5;border:1.5px dashed #B5D4F4;cursor:pointer;font-weight:500;white-space:nowrap;display:flex;align-items:center;gap:4px}
 .btn-add-equip:hover{background:#E6F1FB}
 
-/* ── 종합분석 및 차트 섹션 ── */
+/* ── 차트 섹션 ── */
 .maint-chart-section{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;border:1px solid #e2e8f0}
 .maint-chart-title{font-size:12px;font-weight:600;color:#475569;margin-bottom:10px}
 .maint-kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
@@ -175,7 +176,7 @@ tbody td{padding:7px 10px;border-bottom:1px solid #f8f9fc;color:#334155;vertical
 /* ── 모달 ── */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:999;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
-.modal-box{background:#fff;border-radius:14px;padding:24px;width:400px;max-width:95vw;box-shadow:0 8px 32px rgba(0,0,0,.18)}
+.modal-box{background:#fff;border-radius:14px;padding:24px;width:440px;max-width:95vw;box-shadow:0 8px 32px rgba(0,0,0,.18)}
 .modal-title{font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:16px}
 .modal-form{display:flex;flex-direction:column;gap:10px}
 .modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
@@ -395,6 +396,28 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
     </div>
   </div>
 </div>
+
+<!-- 📋 엑셀 데이터 일괄 붙여넣기 모달 -->
+<div class="modal-overlay" id="modalBulkMaint">
+  <div class="modal-box" style="width:560px">
+    <div class="modal-title" style="display:flex;justify-content:space-between;align-items:center">
+      <span>📋 엑셀 보수이력 일괄 등록</span>
+      <span id="bulkTargetEquipBadge" style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:#E6F1FB;color:#185FA5">선택 설비</span>
+    </div>
+    <div style="font-size:11px;color:#64748b;margin-bottom:10px;line-height:1.5">
+      엑셀에서 <strong>[보수항목 / 수리일자 / 수리상세내용 / 소요일]</strong> 열 데이터를 복사(Ctrl+C)한 뒤 아래 박스에 붙여넣기(Ctrl+V)하세요.
+    </div>
+    <textarea id="bulkPasteInput" style="width:100%;height:200px;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-family:monospace;font-size:11px;outline:none;resize:vertical" placeholder="예시 (엑셀 셀 복사 내용):
+트레버싱 휠	2018.02.03~04	휠 및 베어링 교체(4개)	2
+트레버싱 샤프트	2018.03.13	베어링 및 샤프트 교체	1
+..."></textarea>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="closeModal('modalBulkMaint')">취소</button>
+      <button class="btn-modal-ok" onclick="processBulkMaint()" style="background:#0F6E56">일괄 등록 실행</button>
+    </div>
+  </div>
+</div>
+
 <div class="ctx-menu" id="ctxMenu"><div class="ctx-menu-item danger" id="ctxDeleteBtn" onclick="ctxDelete()">🗑 설비 삭제</div></div>
 
 <script>
@@ -403,7 +426,7 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
 // ══════════════════════════════════════════════
 const EQUIP_META={
   드라이어:{color:'#BA7517',light:'#FAEEDA'},시크너:{color:'#534AB7',light:'#EEEDFE'},
-  리클레이머:{color:'#185FA5',light:'#E6F1FB'},탈수기:{color:'#993556',light:'#FBEAF0'},
+  리클레이머:{color:#185FA5,light:'#E6F1FB'},탈수기:{color:'#993556',light:'#FBEAF0'},
   밀:{color:'#3B6D11',light:'#EAF3DE'},쿨러:{color:'#0F6E56',light:'#E1F5EE'},보일러:{color:'#5F5E5A',light:'#F1EFE8'}
 };
 function getEquipNames(){return Object.keys(EQUIP_META);}
@@ -869,182 +892,34 @@ function showToast(msg,type='save'){
 }
 
 // ══════════════════════════════════════════════
-// ② 보수 이력 데이터 & 로직 (상세내용 필드 확장)
+// ② 보수 이력 데이터 & 로직 (일괄 붙여넣기 기능 탑재)
 // ══════════════════════════════════════════════
 let MAINT_RECORDS=[
-  // ── 밀 ──
+  // 밀
   {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'트러니언 오일탱크 세척·보충',detail:'오일탱크 세척 및 신유 보충',dates:'24.09.29~30 / 12.02~03 / 12.11 / 12.29 / 25.02.09~10 / 04.05~06 / 26.01.13',days:2},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'오일 펌프 교체·라인 청소',detail:'오일펌프 교체 및 배관 라인 스케일 청소',dates:'2024.12.03 / 2024.12.29',days:1},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'오일 쿨러 교체',detail:'오일 쿨러 신품 교체',dates:'2025.08.20',days:1},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'감속기 베어링 교체',detail:'감속기 입력단 및 출력단 베어링 교체',dates:'2025.05.25,27 / 2026.06.01~03',days:2},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'트러니언 고정볼트 파손 교체',detail:'트러니언 체결 볼트 파손품 교체 및 조임',dates:'25.09.04~05 / 11.22~24 / 26.03.08',days:2},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'트러니언 메탈베어링 점검·연마',detail:'메탈베어링 표면 긁힘 점검 및 랩핑 연마',dates:'2025.12.13~14',days:2},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'피니언 기어 베어링 교체',detail:'피니언 샤프트 양단 베어링 교체',dates:'2025.11.22~24',days:3},
-  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'오일펌프 커플링 스파이더 교체',detail:'커플링 우레탄 스파이더 마모 파손 교체',dates:'2024.04.13 / 06.08 / 12.03',days:1},
-  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'트러니언 오일탱크 세척·보충',detail:'오일탱크 플러싱 및 세척',dates:'2024.11.04~07',days:4},
-  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'타이어 커플링 교체',detail:'타이어 커플링 탄성체 교체',dates:'2025.01.04 / 2026.01.02',days:1},
-  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'감속기 교체',detail:'감속기 전체 신품 교체 및 얼라인먼트',dates:'2026.04.25~26',days:2},
-  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'피니언 기어 베어링 교체',detail:'피니언 샤프트 하우징 베어링 교체',dates:'2026.05.08~10',days:3},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'오일 펌프 교체·라인 청소',detail:'오일펌프 교체 및 배관 청소',dates:'2024.12.03 / 2024.12.29',days:1},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'오일 쿨러 교체',detail:'오일 쿨러 교체',dates:'2025.08.20',days:1},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'감속기 베어링 교체',detail:'감속기 입력/출력단 베어링 교체',dates:'2025.05.25,27 / 2026.06.01~03',days:2},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'트러니언 고정볼트 파손 교체',detail:'체결 볼트 파손 교체',dates:'25.09.04~05 / 11.22~24 / 26.03.08',days:2},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'트러니언 메탈베어링 점검·연마',detail:'표면 긁힘 점검 및 랩핑 연마',dates:'2025.12.13~14',days:2},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'피니언 기어 베어링 교체',detail:'양단 베어링 교체',dates:'2025.11.22~24',days:3},
 
-  // ── 탈수기 ──
-  {equip:'탈수기',sub:'50만',unit:'1호',item:'구동 감속기 교체',detail:'구동 감속기 신품 교체 조치',dates:'2024.06.10 / 2026.05.29',days:1},
-  {equip:'탈수기',sub:'50만',unit:'1호',item:'스크래퍼 브라켓 교체',detail:'스크래퍼 고정 브라켓 제작 및 현장 교체',dates:'2025.03.30',days:1},
+  // 탈수기
+  {equip:'탈수기',sub:'50만',unit:'1호',item:'구동 감속기 교체',detail:'감속기 신품 교체',dates:'2024.06.10 / 2026.05.29',days:1},
+  {equip:'탈수기',sub:'50만',unit:'1호',item:'스크래퍼 브라켓 제작·교체',detail:'브라켓 제작 및 현장 교체',dates:'2025.03.30',days:1},
   {equip:'탈수기',sub:'50만',unit:'1호',item:'스크래퍼 베어링 교체',detail:'스크래퍼 샤프트 베어링 교체',dates:'2025.06.29~30',days:2},
-  {equip:'탈수기',sub:'50만',unit:'2호',item:'스크래퍼 실린더 교체',detail:'공압 실린더 누기 및 패킹 소손 교체',dates:'2025.01.05',days:1},
-  {equip:'탈수기',sub:'50만',unit:'2호',item:'배출 스크류 감속기 교체',detail:'배출 스크류용 감속기 교체',dates:'2026.03.23',days:1},
 
-  // ── 드라이어 ──
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'스토퍼 보수 용접',detail:'스토퍼 탈락부 보강 용접 및 신규 부착',dates:'24.08.15~19 / 25.06.02 / 26.02.22 / 03.09',days:3},
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'동체 균열부 용접 보수',detail:'동체 Shell 크랙 발생부 V홈 가공 및 용접',dates:'25.02.01 / 10.19 / 26.03.09',days:1},
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'서포트 롤러·베어링 교체',detail:'서포트 롤러 편마모 교체 및 베어링 교체',dates:'25.10.01~03 / 10.10~12 / 26.05.02~03',days:3},
-
-  // ── 리클레이머 (기존 이력 일체 탑재) ──
-  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'휠 및 베어링 교체(4개)',dates:'2018.02.03~04',days:2},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'샤프트 절단 베어링, 샤프트, 휠 교체(산, 사무실 측)',dates:'2018.06.28',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'트레벌링 휠 베어링 점검',dates:'2018.09.15',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'휠 및 베어링 교체(사무실, 산)',dates:'2019.03.09~10',days:2},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'휠 마모 교체(사무실, 산)',dates:'2019.10.29',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'휠 편마모로 휠 및 베어링 교체(사무실 산, ALC 산)',dates:'2020.06.22',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'구동 휠, 베어링 교체(강측 2개)',dates:'2020.07.27',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'트레버싱 휠, 샤프트, 하우징, 베어링 교체(alc, 강측 / 사무실, 강측)',dates:'2022.04.29~30',days:2},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'휠, 하우징, 베어링 전체 교체 (사무실 강측 마모 등)',dates:'2023.08.08~10',days:3},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'트레벌링 휠 베어링 전체 교체 (145*190*16 리테이너)',dates:'2024.02.05~07',days:3},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'휠, 샤프트, 베어링, 하우징 교체(alc, 강측)',dates:'2024.06.30~07.01',days:2},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'트레버싱 휠 파손 교체(센서 측: 하우징, 베어링, 휠, 샤프트 일체 SCM440 적용)',dates:'2025.06.17',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 휠',item:'트레버싱 휠',detail:'트레버싱 휠 마모 교체(산측 2ea, 베어링, 하우징 포함)',dates:'2025.09.13',days:1},
-
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'구동 Shaft: 샤프트 파손 교체, 베어링, 체인 교체, 스프라켓 육성 가공',dates:'2017.04.20',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'구동 Shaft: 샤프트 절단 가공 교체, 베어링 UP, 스프라켓 교체',dates:'2017.08.03',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'휠 Shaft: 베어링 및 샤프트 교체(샤프트 절단, ALC 강측 센서측)',dates:'2018.03.13',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'휠 샤프트, 베어링 교체(샤프트 절단, 강, ALC측)',dates:'2018.10.02',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'휠 샤프트 절단 교체(베어링 포함, 강 ALC측)',dates:'2019.04.25 / 2019.08.28',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'구동 샤프트 베어링 너트 조임',dates:'2019.04.29',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'휠 샤프트 절단 교체(베어링 포함, 강 사무실측)',dates:'2019.07.27',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'샤프트 교체',dates:'2019.10.29',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'샤프트 절단 교체, 베어링, 하우징 교체(alc, 강측)',dates:'2020.01.21~22',days:2},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'Shaft 및 베어링 교체, 엔코더 및 오일씰 교체 (강 ALC측)',dates:'2021.03.15',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'Shaft 및 베어링 교체(샤프트 절단, 강 사무실측)',dates:'2021.06.17~18',days:2},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'휠 샤프트 절단 교체(휠만 재사용, ALC 강측)',dates:'2021.12.31~02.03',days:3},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'샤프트, 베어링, 하우징, 스프로킷 교체(예방정비, ALC 산측)',dates:'2022.01.01~02',days:2},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'구동 샤프트 베어링/하우징 교체, 체인 교체(사무실 측)',dates:'2022.03.28~29',days:2},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'샤프트, 하우징, 베어링 교체(alc, 강측 샤프트/하우징 파손)',dates:'2022.12.29',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'샤프트 전체 교체(alc, 강측 제외 / 사무실 강측 파손 교체)',dates:'2023.08.08~10',days:3},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'휠 샤프트 파손 긴급 교체(alc 강측: 샤프트, 베어링, 하우징)',dates:'2024.01.11',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'휠 샤프트 절단 긴급 교체(alc 강측: 샤프트, 베어링, 하우징 1개)',dates:'2024.08.28',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'휠 샤프트 절단 긴급 교체(alc 강측: 샤프트, 베어링, 하우징 2개)',dates:'2025.02.27 / 2025.05.14',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'구동 샤프트/스프라켓 육성 가공, 베어링/체인 교체(사측)',dates:'2025.05.09',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'구동 샤프트 베어링 교체(유격)',dates:'2025.09.13',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 샤프트',item:'트레버싱 샤프트',detail:'구동 샤프트 하우징 볼트 교체(alc측)',dates:'2026.01.25~26',days:2},
-
-  {equip:'리클레이머',sub:'',unit:'휠 하우징',item:'휠 하우징',detail:'휠 하우징 균열부 용접(4곳)',dates:'2020.05.02',days:1},
-  {equip:'리클레이머',sub:'',unit:'휠 하우징',item:'휠 하우징',detail:'휠 하우징 파손 하우징 교체(센서 측)',dates:'2025.05.17~19',days:2},
-  {equip:'리클레이머',sub:'',unit:'휠 하우징',item:'휠 하우징',detail:'휠 하우징 파손 교체(ALC, 산측 2개)',dates:'2026.05.14',days:1},
-  {equip:'리클레이머',sub:'',unit:'휠 하우징',item:'휠 하우징',detail:'휠 하우징 균열 교체(ALC 산측), 베어링 교체, 샤프트 육성 가공',dates:'2026.06.04~05',days:1},
-
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'가이드 롤러 베어링 교체(ALC 강, 산)',dates:'2017.06.26 / 2017.10.01~02 / 2018.05.13 / 2018.10.16 / 2018.11.12 / 2019.01.07 / 2019.03.09~10 / 2022.03.28~29 / 2022.06.12~14 / 2023.06.18 / 2024.01~02 / 2026.06.27~28',days:1},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'롤러 및 베어링 일괄 교체(6개)',dates:'2017.07.27',days:1},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'베어링 및 샤프트 육성 가공',dates:'2018.06.04',days:1},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'하부 산측 롤러 가공 및 베어링 교체',dates:'2018.06.10',days:1},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'하부 양측 롤러 및 베어링 교체',dates:'2018.08.08',days:1},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'베어링 교체(alc 산측 상부), 볼트 파손 교체, 프레임 용접',dates:'2019.08.19',days:1},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'하부 강측 베어링 교체, 롤러 방향 전환',dates:'2019.10.16~18',days:3},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'가이드 롤러 베어링/샤프트/하우징 교체(alc 상부 2개소)',dates:'2020.03.02~03',days:2},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'베어링 교체 및 샤프트 가공 교체',dates:'2020.05.02',days:1},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'베어링/하우징/롤러/샤프트 교체(강측 하부, alc 강 상부)',dates:'2020.08.22',days:1},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'로라 프레임 보강 용접',dates:'2020.12.20',days:1},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'가이드롤러 베어링 하우징 교체',dates:'2021.02.08~10',days:3},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'Drum Guide Roller 점검 및 위치 조정',dates:'2021.03.22',days:1},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'가이드 베어링 및 하우징 마모 교체(하부, 산)',dates:'2021.07.10~11',days:2},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'하우징 및 베어링 교체(강, 하부), 롤러/샤프트/베어링 교체(사무실 강 상부)',dates:'2022.01.11~12',days:2},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'베어링 교체(사무실 강 상부, 강 하부, alc 강 상부 총 3개)',dates:'2022.10.01~02',days:2},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'가이드 롤러 주변 균열부 용접(하부, 산측)',dates:'2023.08.13~14',days:2},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'하부 프레임 용접(강), 볼트 파손 교체 2곳',dates:'2024.02.08',days:1},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'하우징 및 베어링 교체(강, 하부)',dates:'2024.06.30~07.01',days:2},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'샤프트, 베어링, 하우징 교체(하부, 산측)',dates:'2025.10.18~19',days:2},
-  {equip:'리클레이머',sub:'',unit:'가이드 롤러',item:'가이드 롤러',detail:'베어링, 롤러 교체, 샤프트 육성 가공(사무실, 산, 상부)',dates:'2026.03.15',days:1},
-
-  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'사이드 롤러 베어링 교체',dates:'2018.05.15 / 2018.10.16 / 2019.01.23 / 2019.03.09~10 / 2019.04.29 / 2019.07.06 / 2020.03.28 / 2021.03.22 / 2022.07.02~03 / 2022.10.01~02 / 2023.06.25~26 / 2023.08.13~14 / 2024.01~02 / 2025.05.17~19 / 2025.10.18~19 / 2026.06.27~28',days:1},
-  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'사이드롤러 교체(사무실, 강측, 상)',dates:'2017.10.01~02',days:2},
-  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'싸이드 롤러 위치 조정(동체 쏠림 원인)',dates:'2018.10.22',days:1},
-  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'사무실 강측 하부 베어링 교체(오일링에서 리테이너 개조)',dates:'2018.11.11',days:1},
-  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'베어링 교체 및 롤러 육성 가공(ALC, 산측 하부)',dates:'2019.08.28',days:1},
-  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'마모 교체(사무실 산 상부: 베어링, 롤러, 샤프트 교체)',dates:'2020.01.19',days:1},
-  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'하우징 볼트 파손 교체(사무실, 산, 하부)',dates:'2020.03.02~03',days:2},
-  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'베어링 및 샤프트 교체(사무실, 강측 하부)',dates:'2020.06.20',days:1},
-  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'롤러 및 베어링 교체(alc 강 상부) / 베어링 교체(사무실 산 하부)',dates:'2020.11.14~15',days:2},
-  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'베어링 및 샤프트 교체(사무실 산 상부), 베어링 교체(alc 강 하부)',dates:'2021.07.10~11',days:2},
-  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'싸이드 롤러 외 볼트류 전체 교체',dates:'2024.10.29',days:1},
-  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'마모 교체(사무실 산 상부, 사무실 강 상부, alc 강 상부)',dates:'2024.12.30~31',days:2},
-  {equip:'리클레이머',sub:'',unit:'사이드 롤러',item:'사이드 롤러',detail:'브라켓 파손 보강 용접(alc, 산, 상부)',dates:'2025.09.07',days:1},
-
-  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'Support Roller bed 용접 및 프레임 볼트 교체',dates:'2017.04.10 / 2017.06.03~06 / 2017.07.06',days:1},
-  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'롤러 및 베어링 교체(2개 다)',dates:'2017.06.16',days:2},
-  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'베드 볼트 고정 체결(ALC, 산)',dates:'2017.10.01~02',days:2},
-  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'베어링 전체 교체',dates:'2018.11.10~11 / 2021.02.08~10 / 2023.08.11~12',days:2},
-  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'사무실측 서포트 롤러 교체(베어링 신품, 하우징 재사용)',dates:'2018.12.30~31',days:2},
-  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'낙광 방지판 교체',dates:'2019.04.29',days:1},
-  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'마모 교체(베어링 포함)',dates:'2019.07.06 / 2022.08.27~29 / 2024.10.12~15',days:3},
-  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'베드 심(Shim) 삽입 작업(전체)',dates:'2019.10.16~18',days:3},
-  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'베어링 교체(alc, 산측 상부)',dates:'2020.01.23',days:1},
-  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'보강대 사용 용접 및 산측 심 삽입',dates:'2020.03.02~03 / 2020.05.11~12',days:2},
-  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'베어링 및 Housing 교체(alc, 산측)',dates:'2020.03.28',days:1},
-  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'서포트롤러 전면 교체 (외주 업체)',dates:'2020.07.31~08.13',days:14},
-  {equip:'리클레이머',sub:'',unit:'서포트 롤러',item:'서포트 롤러',detail:'심(Shim) 제작 및 삽입(12t, 롤러 마모 대응)',dates:'2026.01.25~26',days:2},
-
-  {equip:'리클레이머',sub:'',unit:'스크래퍼',item:'스크래퍼',detail:'프레임 절단 보강 용접(사무실 산쪽)',dates:'2017.03.31',days:1},
-  {equip:'리클레이머',sub:'',unit:'스크래퍼',item:'스크래퍼',detail:'마모 및 균열부 보강 용접',dates:'2017.10.01~02 / 2019.10.16~18 / 2020.01.23 / 2020.03.02~03 / 2021.07.23~26 / 2022.01.11~12 / 2024.10.29',days:2},
-  {equip:'리클레이머',sub:'',unit:'스크래퍼',item:'스크래퍼',detail:'균열부 교체(alc측)',dates:'2019.07.06',days:1},
-  {equip:'리클레이머',sub:'',unit:'스크래퍼',item:'스크래퍼',detail:'스크래퍼 핀 이탈 교체(alc, 강측)',dates:'2019.11.20',days:1},
-  {equip:'리클레이머',sub:'',unit:'스크래퍼',item:'스크래퍼',detail:'파이프 마모 보강 용접',dates:'2020.05.11~12',days:2},
-  {equip:'리클레이머',sub:'',unit:'스크래퍼',item:'스크래퍼',detail:'스테이 보강 용접(alc, 6개소)',dates:'2024.06.30~07.01',days:2},
-  {equip:'리클레이머',sub:'',unit:'스크래퍼',item:'스크래퍼',detail:'파이프 절단 교체 및 보강대 용접(ALC측)',dates:'2025.08.07',days:1},
-
-  {equip:'리클레이머',sub:'',unit:'드럼 및 동체',item:'드럼 및 동체',detail:'거스기어 용접 보수',dates:'2017.01.06',days:1},
-  {equip:'리클레이머',sub:'',unit:'드럼 및 동체',item:'드럼 및 동체',detail:'드럼 링 설치 용접',dates:'2017.06.03~06',days:4},
-  {equip:'리클레이머',sub:'',unit:'드럼 및 동체',item:'드럼 및 동체',detail:'드럼 링 용접 제거 및 외부 가공 조립(업체)',dates:'2017.07.22~28',days:7},
-  {equip:'리클레이머',sub:'',unit:'드럼 및 동체',item:'드럼 및 동체',detail:'동체 산측을 alc측으로 얼라인먼트 조정',dates:'2019.03.18',days:1},
-  {equip:'리클레이머',sub:'',unit:'드럼 및 동체',item:'드럼 및 동체',detail:'동체(기어 및 링) 전면 교체(업체)',dates:'2020.07.31~08.13',days:14},
-  {equip:'리클레이머',sub:'',unit:'드럼 및 동체',item:'드럼 및 동체',detail:'동체 내부 용접 및 그라인딩 평삭',dates:'2020.11.14~15',days:2},
-
-  {equip:'리클레이머',sub:'',unit:'내판 라이너',item:'내판 라이너',detail:'내판 라이나 교체 1, 2, 3번',dates:'2017.01.04 / 2017.04.26',days:1},
-  {equip:'리클레이머',sub:'',unit:'내판 라이너',item:'내판 라이너',detail:'사이드 라이나 보강 용접',dates:'2017.06.14~15',days:2},
-  {equip:'리클레이머',sub:'',unit:'내판 라이너',item:'내판 라이너',detail:'내판 라이나 프레임 볼트 조임 및 용접(사무실측)',dates:'2020.06.23',days:1},
-  {equip:'리클레이머',sub:'',unit:'내판 라이너',item:'내판 라이너',detail:'내판 및 내판 프레임 교체(업체)',dates:'2020.07.31~08.13',days:14},
-  {equip:'리클레이머',sub:'',unit:'내판 라이너',item:'내판 라이너',detail:'ALC측 내판 라이나 2, 3번 교체 및 보수',dates:'2021.01.26',days:1},
-  {equip:'리클레이머',sub:'',unit:'내판 라이너',item:'내판 라이너',detail:'내판 라이나 탈락 제거(3ea)',dates:'2023.07.19',days:1},
-
-  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'드럼과 버켓 사이 밴딩 용접',dates:'2017.06.14~15',days:2},
-  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'버켓 구동 감속기 교체, 아이들 스프라켓 2개 교체',dates:'2017.07.22',days:1},
-  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'아이들 스프라켓 상하 베어링/체인 교체',dates:'2018.07.08 / 2022.06.12~14',days:2},
-  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'버켓 구동 감속기 베어링 파손 교체',dates:'2020.01.23',days:1},
-  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'드럼 감속기 교체',dates:'2021.02.08~10',days:3},
-  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'버켓 링 기어 균열부 V컷팅 용접(3개소)',dates:'2021.07.23~26',days:3},
-  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'버켓 내측 공간 좁힘 개조(170mm→30mm, 총 15ea)',dates:'2024.07.06',days:1},
-  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'아이들러 스프라켓 앤드카바 볼트 교체(하부)',dates:'2026.01.25~26',days:2},
-  {equip:'리클레이머',sub:'',unit:'버켓/스프라켓',item:'버켓/스프라켓',detail:'버켓 구동 감속기 교체(수리품) 및 텐션 볼트 용접',dates:'2026.03.23',days:1},
-
-  {equip:'리클레이머',sub:'',unit:'트레버싱 감속기',item:'트레버싱 감속기',detail:'구동 감속기 샤프트 가공 교체, 1단 베어링 교체',dates:'2022.08.25',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 감속기',item:'트레버싱 감속기',detail:'트레벌링 감속기 오일 레벨 호스 교체(산측)',dates:'2024.02.08',days:1},
-  {equip:'리클레이머',sub:'',unit:'트레버싱 감속기',item:'트레버싱 감속기',detail:'트레버싱 감속기 파손 신품 교체',dates:'2025.05.09',days:1},
-
-  {equip:'리클레이머',sub:'',unit:'주행 레일',item:'주행 레일',detail:'주행 레일 전면 교체',dates:'2018.04 / 2020.07.24',days:2},
-  {equip:'리클레이머',sub:'',unit:'주행 레일',item:'주행 레일',detail:'레일 밀림 조정',dates:'2020.11.14~15',days:2},
-  {equip:'리클레이머',sub:'',unit:'주행 레일',item:'주행 레일',detail:'레일 보수(6개소 육성 및 그라인딩, 2개소 간격 조정)',dates:'2025.05.17~19',days:2},
-
-  {equip:'리클레이머',sub:'',unit:'프레임/부속',item:'프레임/부속',detail:'프레임 균열부 용접 보수',dates:'2017.10.01~02 / 2019.03.18 / 2020.05.11~12 / 2021.03.22 / 2021.07.18',days:2},
-  {equip:'리클레이머',sub:'',unit:'프레임/부속',item:'프레임/부속',detail:'고정 볼트류 전체 재조임',dates:'2018.08.19',days:1},
-  {equip:'리클레이머',sub:'',unit:'프레임/부속',item:'프레임/부속',detail:'프레임 볼트 파손 및 균열 보수',dates:'2019.03.09~10 / 2019.10.29 / 2026.01.25~26',days:2},
-  {equip:'리클레이머',sub:'',unit:'프레임/부속',item:'프레임/부속',detail:'사다리 개수(강측 1ea, 본체 2ea)',dates:'2022.02.22',days:1},
-  {equip:'리클레이머',sub:'',unit:'프레임/부속',item:'프레임/부속',detail:'스키바 위치 조정 (운전실측 약 750mm 이동)',dates:'2022.02.23',days:1},
-  {equip:'리클레이머',sub:'',unit:'프레임/부속',item:'프레임/부속',detail:'트레버싱 스토퍼 설치(산측)',dates:'2022.03.02',days:1},
-  {equip:'리클레이머',sub:'',unit:'프레임/부속',item:'프레임/부속',detail:'트레버싱 휠 주변 및 보안커버 보강 용접(사무실 강측)',dates:'2022.03.28~29',days:2},
+  // 드라이어
+  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'스토퍼 탈락부 용접·교체',detail:'스토퍼 보강 용접 및 부착',dates:'24.08.15~19 / 25.06.02 / 26.02.22 / 03.09',days:3},
+  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'동체 균열부 용접 보수',detail:'Shell 크랙 V홈 가공 및 용접',dates:'25.02.01 / 10.19 / 26.03.09',days:1},
+  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'서포트 롤러·베어링 교체',detail:'롤러 편마모 교체 및 베어링 교체',dates:'25.10.01~03 / 10.10~12 / 26.05.02~03',days:3}
 ];
 
 const MAINT_EQUIPS=['밀','탈수기','드라이어','쿨러','세라믹 필터','보일러','집진기 블로워 임펠러','시크너 용수펌프','조크러셔','리클레이머'];
 const MAINT_COLORS={'밀':'#3B6D11','탈수기':'#993556','드라이어':'#BA7517','쿨러':'#0F6E56','세라믹 필터':'#185FA5','보일러':'#5F5E5A','집진기 블로워 임펠러':'#7C3D8F','시크너 용수펌프':'#0E7490','조크러셔':'#854F0B','리클레이머':'#185FA5'};
 const MAINT_LIGHTS={'밀':'#EAF3DE','탈수기':'#FBEAF0','드라이어':'#FAEEDA','쿨러':'#E1F5EE','세라믹 필터':'#E6F1FB','보일러':'#F1EFE8','집진기 블로워 임펠러':'#F3E8FF','시크너 용수펌프':'#E0F7FA','조크러셔':'#FFF3E0','리클레이머':'#E6F1FB'};
 
-let MAINT_COL_HEADERS=['보수 항목','수리 일자','수리 상세내용','작업 소요일'];
+let MAINT_COL_HEADERS=['보수 항목','수리 일자','수리 상세내용','소요일'];
 let currentMaintEquip=MAINT_EQUIPS[0];
 let currentMaintSub=null;
 let currentMaintUnit=null;
@@ -1110,9 +985,10 @@ function renderMaintContent(){
 
   const finalRecords=currentMaintUnit?subRecords.filter(r=>r.unit===currentMaintUnit):subRecords;
 
-  // ── 요청하신 4개 항목 입력 폼 ──
+  // ── 상단 액션 버튼 (단건 추가 + 📋 엑셀 일괄 등록) ──
   html+=`<div class="maint-add-row">
-    <button class="btn-maint-add" onclick="toggleMaintInput()">＋ 보수 이력 추가</button>
+    <button class="btn-maint-bulk" onclick="openBulkModal()">📋 엑셀 일괄 등록</button>
+    <button class="btn-maint-add" onclick="toggleMaintInput()">＋ 단건 직접 추가</button>
   </div>
   <div class="maint-input-area${maintInputOpen?' open':''}" id="maintInputArea">
     <div class="maint-form-grid" style="display:grid;grid-template-columns:1.2fr 1fr 1.8fr 75px auto;gap:8px;align-items:end">
@@ -1128,8 +1004,8 @@ function renderMaintContent(){
   if(finalRecords.length){
     html+=`<table class="maint-table" id="maintTable">
       <thead><tr>
-        <th style="width:16%" id="mCol0">${MAINT_COL_HEADERS[0]}</th>
-        <th style="width:15%" id="mCol1">${MAINT_COL_HEADERS[1]}</th>
+        <th style="width:17%" id="mCol0">${MAINT_COL_HEADERS[0]}</th>
+        <th style="width:16%" id="mCol1">${MAINT_COL_HEADERS[1]}</th>
         <th id="mCol2">${MAINT_COL_HEADERS[2]}</th>
         <th style="width:85px;text-align:center" id="mCol3">${MAINT_COL_HEADERS[3]}</th>
         <th style="width:90px;text-align:right">관리</th>
@@ -1139,9 +1015,9 @@ function renderMaintContent(){
           const realIdx=MAINT_RECORDS.indexOf(r);
           return`<tr id="mrow_${realIdx}">
             <td id="mcell_item_${realIdx}" style="font-weight:600;color:#1a1a2e">${r.item}</td>
-            <td id="mcell_dates_${realIdx}"><div class="date-chips">${r.dates.split('/').map(d=>d.trim()).filter(d=>d.length>2).map(d=>`<span class="date-chip">${d}</span>`).join('')}</div></td>
+            <td id="mcell_dates_${realIdx}"><div class="date-chips">${(r.dates||'').split('/').map(d=>d.trim()).filter(d=>d.length>2).map(d=>`<span class="date-chip">${d}</span>`).join('')}</div></td>
             <td id="mcell_detail_${realIdx}" style="color:#475569">${r.detail || '-'}</td>
-            <td id="mcell_days_${realIdx}" style="text-align:center"><span class="days-badge" style="background:${light};color:${color}">${r.days}일</span></td>
+            <td id="mcell_days_${realIdx}" style="text-align:center"><span class="days-badge" style="background:${light};color:${color}">${r.days||1}일</span></td>
             <td><div class="action-btns">
               <button class="btn-maint-edit" onclick="startEdit(${realIdx})">수정</button>
               <button class="btn-maint-del" onclick="deleteMaintRecord(${realIdx})">삭제</button>
@@ -1157,20 +1033,83 @@ function renderMaintContent(){
   document.getElementById('maintContent').innerHTML=html;
 }
 
-// ── 인라인 수정 ──────────────────────────────────────
+// ── 📋 엑셀 데이터 파싱 및 일괄 등록 로직 ──
+function openBulkModal(){
+  const badge = document.getElementById('bulkTargetEquipBadge');
+  if(badge) badge.textContent = `${currentMaintEquip}${currentMaintUnit ? ' > ' + currentMaintUnit : ''}`;
+  document.getElementById('bulkPasteInput').value = '';
+  openModal('modalBulkMaint');
+}
+
+function processBulkMaint(){
+  const raw = document.getElementById('bulkPasteInput').value.trim();
+  if(!raw){ alert('붙여넣은 데이터가 없습니다.'); return; }
+
+  const lines = raw.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+  let addedCount = 0;
+  const sub = currentMaintSub || '';
+  const unit = currentMaintUnit || '';
+
+  lines.forEach(line=>{
+    // 탭(\t) 또는 쉼표(,) 구분자로 분리
+    let cols = line.split('\t');
+    if(cols.length < 2) cols = line.split(',');
+    cols = cols.map(c=>c.trim().replace(/^["']|["']$/g, ''));
+
+    // 헤더 행 건너뛰기
+    if(cols[0].includes('보수') || cols[0].includes('구분') || cols[0].includes('항목')) return;
+
+    const item = cols[0];
+    const dates = cols[1];
+    const detail = cols[2] || '-';
+    // 소요일 파싱 (기본 1일)
+    let days = 1;
+    if(cols[3]){
+      const parsedDays = parseInt(cols[3].replace(/[^0-9]/g, ''));
+      if(!isNaN(parsedDays) && parsedDays > 0) days = parsedDays;
+    }
+
+    if(item && dates){
+      MAINT_RECORDS.push({
+        equip: currentMaintEquip,
+        sub: sub,
+        unit: unit,
+        item: item,
+        dates: dates,
+        detail: detail,
+        days: days
+      });
+      addedCount++;
+    }
+  });
+
+  if(addedCount > 0){
+    closeModal('modalBulkMaint');
+    buildMaintSidebar();
+    renderMaintContent();
+    autoSave();
+    syncAllTabs();
+    refreshAllYearTabs();
+    showToast(`✅ ${addedCount}건의 보수 이력이 일괄 등록되었습니다`);
+  }else{
+    alert('인식 가능한 데이터가 없습니다. 형식(보수항목, 수리일자, 수리상세내용)을 확인해주세요.');
+  }
+}
+
+// ── 단건 인라인 수정 ──────────────────────────────────────
 function startEdit(idx){
   const r=MAINT_RECORDS[idx];
   const row=document.getElementById(`mrow_${idx}`);
   if(!row)return;
   row.classList.add('editing-row');
   document.getElementById(`mcell_item_${idx}`).innerHTML=
-    `<input class="edit-input" id="edit_item_${idx}" value="${r.item.replace(/"/g,'&quot;')}">`;
+    `<input class="edit-input" id="edit_item_${idx}" value="${(r.item||'').replace(/"/g,'&quot;')}">`;
   document.getElementById(`mcell_dates_${idx}`).innerHTML=
-    `<input class="edit-input" id="edit_dates_${idx}" value="${r.dates.replace(/"/g,'&quot;')}">`;
+    `<input class="edit-input" id="edit_dates_${idx}" value="${(r.dates||'').replace(/"/g,'&quot;')}">`;
   document.getElementById(`mcell_detail_${idx}`).innerHTML=
     `<input class="edit-input" id="edit_detail_${idx}" value="${(r.detail||'').replace(/"/g,'&quot;')}">`;
   document.getElementById(`mcell_days_${idx}`).innerHTML=
-    `<input class="edit-input" type="number" id="edit_days_${idx}" value="${r.days}" min="1" style="width:54px;text-align:center">`;
+    `<input class="edit-input" type="number" id="edit_days_${idx}" value="${r.days||1}" min="1" style="width:54px;text-align:center">`;
   row.cells[4].innerHTML=`<div class="action-btns">
     <button class="btn-maint-ok" onclick="saveEdit(${idx})">✓ 저장</button>
     <button class="btn-maint-cancel" onclick="cancelEdit(${idx})">✕ 취소</button>
@@ -1679,7 +1618,7 @@ function renderEffectTable(mode){
     </tbody></table></div>`;
 }
 
-// ══ 보수 항목별 발생 건수 차트 렌더링 (보수항목 item 기준 집계) ══
+// ══ 보수 항목별 발생 건수 차트 렌더링 (보수항목 item 기준) ══
 let maintChart=null;
 
 function renderMaintChart(){
@@ -1688,7 +1627,7 @@ function renderMaintChart(){
   const subRecs=currentMaintSub?records.filter(r=>r.sub===currentMaintSub):records;
   const finalRecs=currentMaintUnit?subRecs.filter(r=>r.unit===currentMaintUnit):subRecs;
   const totalCnt=finalRecs.length;
-  const totalDays=finalRecs.reduce((s,r)=>s+r.days,0);
+  const totalDays=finalRecs.reduce((s,r)=>s+(r.days||1),0);
   const avgDays=totalCnt>0?(totalDays/totalCnt).toFixed(1):0;
   
   const kv1=document.getElementById('mKv1');
@@ -1701,10 +1640,9 @@ function renderMaintChart(){
   const chartEl=document.getElementById('maintChartArea');
   if(!chartEl)return;
 
-  // 보수 항목(item) 기준으로만 차트 발생 건수 집계
   const itemMap={};
   finalRecs.forEach(r=>{
-    const dateParts=r.dates.split(/[/,]/).map(d=>d.trim()).filter(d=>d.length>2);
+    const dateParts=(r.dates||'').split(/[/,]/).map(d=>d.trim()).filter(d=>d.length>2);
     itemMap[r.item]=(itemMap[r.item]||0)+dateParts.length;
   });
   
