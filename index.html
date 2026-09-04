@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>선광 설비 관리 통합</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<!-- 엑셀 내보내기 라이브러리 추가 -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -67,6 +69,9 @@ body{background:#f0f2f5;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-s
 .insight-card{background:#f8f9fc;border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid #f1f5f9}
 .insight-card-title{font-size:10px;color:#64748b;margin-bottom:6px;display:flex;align-items:center;gap:5px}
 .insight-card-val{font-size:20px;font-weight:700;color:#1C2B4A;margin-bottom:2px}
+.insight-card-sub{font-size:10px;display:flex;align-items:center;gap:4px}
+.trend-up{color:#A32D2D}
+.trend-down{color:#0F6E56}
 .insight-tip{background:#EEF2FF;border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid #E0E7FF}
 .insight-tip-title{font-size:10px;font-weight:700;color:#4338CA;margin-bottom:5px;display:flex;align-items:center;gap:4px}
 .insight-tip-text{font-size:11px;color:#3730A3;line-height:1.6}
@@ -80,6 +85,7 @@ body{background:#f0f2f5;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-s
 .kpi-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
 .kpi-card{background:#fff;border-radius:12px;padding:14px 16px;border:1px solid #e2e8f0;display:flex;align-items:center;gap:12px}
 .kpi-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.kpi-body{}
 .kpi-label{font-size:10px;color:#94a3b8;margin-bottom:3px;font-weight:500}
 .kpi-val{font-size:22px;font-weight:700}
 
@@ -89,6 +95,8 @@ body{background:#f0f2f5;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-s
 .btn-primary:hover{background:#263d63}
 .btn-secondary{font-size:12px;padding:8px 16px;border-radius:8px;background:#fff;color:#334155;border:1px solid #e2e8f0;cursor:pointer;font-weight:500;display:flex;align-items:center;gap:5px}
 .btn-secondary:hover{background:#f8f9fc}
+.btn-excel{font-size:12px;padding:8px 16px;border-radius:8px;background:#0F6E56;color:#fff;border:none;cursor:pointer;font-weight:500;display:flex;align-items:center;gap:5px}
+.btn-excel:hover{background:#0b5341}
 
 /* ── 서브탭 ── */
 .sub-tab-row{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
@@ -150,11 +158,11 @@ tbody td{padding:7px 10px;border-bottom:1px solid #f8f9fc;color:#334155;vertical
 .days-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
 .date-chips{display:flex;flex-wrap:wrap;gap:3px}
 .date-chip{font-size:10px;color:#475569;background:#f1f5f9;border-radius:5px;padding:1px 6px;white-space:nowrap}
-.maint-add-row{display:flex;justify-content:flex-end;margin-bottom:10px}
-.btn-maint-add{font-size:11px;padding:5px 14px;background:#185FA5;color:#fff;border:none;border-radius:7px;cursor:pointer;font-weight:500}
+.maint-add-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px}
+.btn-maint-add{font-size:11px;padding:6px 14px;background:#185FA5;color:#fff;border:none;border-radius:7px;cursor:pointer;font-weight:500}
 .maint-input-area{background:#f8f9fc;border-radius:10px;padding:14px;margin-bottom:14px;display:none;border:1px solid #e2e8f0}
 .maint-input-area.open{display:block}
-.maint-form-grid{display:grid;grid-template-columns:1fr 1fr 80px auto;gap:8px;align-items:end}
+.maint-form-grid{display:grid;grid-template-columns:1.2fr 1.2fr 1.5fr 70px auto;gap:8px;align-items:end}
 .btn-maint-edit{font-size:11px;padding:2px 8px;border-radius:5px;background:#E6F1FB;color:#185FA5;border:none;cursor:pointer;margin-right:3px}
 .btn-maint-edit:hover{background:#B5D4F4}
 .btn-maint-cancel{font-size:11px;padding:2px 8px;border-radius:5px;background:#F1EFE8;color:#5F5E5A;border:none;cursor:pointer;margin-right:3px}
@@ -167,7 +175,7 @@ tbody td{padding:7px 10px;border-bottom:1px solid #f8f9fc;color:#334155;vertical
 .btn-add-equip{font-size:11px;padding:5px 12px;border-radius:20px;background:#fff;color:#185FA5;border:1.5px dashed #B5D4F4;cursor:pointer;font-weight:500;white-space:nowrap;display:flex;align-items:center;gap:4px}
 .btn-add-equip:hover{background:#E6F1FB}
 
-/* ── 종합분석 및 KPI ── */
+/* ── 종합분석 ── */
 .maint-chart-section{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;border:1px solid #e2e8f0}
 .maint-chart-title{font-size:12px;font-weight:600;color:#475569;margin-bottom:10px}
 .maint-kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
@@ -202,7 +210,9 @@ tbody td{padding:7px 10px;border-bottom:1px solid #f8f9fc;color:#334155;vertical
   .maint-layout{grid-template-columns:1fr}
   .form-grid{grid-template-columns:1fr 1fr}
   .form-grid button.btn-add{grid-column:1/-1}
+  .maint-form-grid{grid-template-columns:1fr}
 }
+
 footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bottom:16px}
 </style>
 </head>
@@ -254,7 +264,7 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
   <div class="content-layout">
     <div class="content-main">
 
-      <!-- PAGE 1: 부동 관리 -->
+      <!-- PAGE 1: 설비 부동 관리 -->
       <div id="pageBdong" class="page on">
         <div class="page-header">
           <div class="page-subtitle" id="labelBdong">2024–2026 ANNUAL MAINTENANCE REPORT</div>
@@ -275,6 +285,7 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
           </div>
         </div>
         <div class="action-row">
+          <button class="btn-excel" onclick="exportToExcel('bdong')">📥 부동 엑셀 다운로드</button>
           <button class="btn-secondary" onclick="togglePanel()">＋ 부동 이력 추가 / 관리</button>
           <button class="btn-primary" onclick="saveFile()">💾 저장</button>
         </div>
@@ -305,7 +316,7 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
         <div id="mainView"></div>
       </div>
 
-      <!-- PAGE 2: 보수 이력 관리 -->
+      <!-- PAGE 2: 설비 보수 이력 관리 -->
       <div id="pageMaint" class="page" style="display:none">
         <div class="page-header">
           <div class="page-subtitle" id="labelMaint">2024–2026 MAINTENANCE HISTORY</div>
@@ -323,10 +334,12 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
           <div class="page-subtitle" id="labelAnalysis">COMPREHENSIVE ANALYSIS · 2024–2026</div>
           <div class="page-title">설비 종합 분석</div>
         </div>
+        <div class="action-row" style="margin-bottom:14px">
+          <button class="btn-excel" onclick="exportToExcel('all')">📑 전 설비 통합 엑셀 다운로드</button>
+        </div>
         <div class="section-title" style="margin-bottom:4px">설비별 종합 현황</div>
         <div class="section-sub">부동 + 보수 데이터 통합 비교 — 카드를 클릭하면 상세 분석으로 이동</div>
         <div id="analysisCards" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px"></div>
-        
         <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:12px;margin-bottom:14px">
           <div class="card">
             <div class="section-title">설비별 부동 · 보수 비교</div>
@@ -345,7 +358,6 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
             <div style="position:relative;height:200px"><canvas id="cTimeline"></canvas></div>
           </div>
         </div>
-
         <div class="card">
           <div class="section-title">보수 효과 분석</div>
           <div class="section-sub" id="effectSubtitle">평균 보수주기 대비 경과일 비교 — 정비 시점이 임박했는지 한눈에 확인</div>
@@ -361,7 +373,7 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
       <footer id="footerYear">선광 설비 관리 통합 시스템 · 2024–2026</footer>
     </div>
 
-    <!-- 인사이트 패널 -->
+    <!-- 우측 인사이트 패널 -->
     <div class="insight-panel" id="insightPanel">
       <div class="insight-title">💡 운영 인사이트</div>
       <div id="insightContent"></div>
@@ -398,32 +410,7 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
     </div>
   </div>
 </div>
-
-<!-- 우클릭 컨텍스트 메뉴 -->
 <div class="ctx-menu" id="ctxMenu"><div class="ctx-menu-item danger" id="ctxDeleteBtn" onclick="ctxDelete()">🗑 설비 삭제</div></div>
-
-<!-- 설비 상세 분석 팝업 -->
-<div class="modal-overlay" id="modalDetail" style="align-items:flex-start;padding:40px 20px;overflow-y:auto">
-  <div class="modal-box" style="width:720px;max-width:95vw;max-height:85vh;overflow-y:auto">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div id="detailModalTitle" style="font-size:16px;font-weight:700;color:#1a1a2e"></div>
-      <button onclick="closeModal('modalDetail')" style="background:none;border:none;font-size:18px;cursor:pointer;color:#64748b;padding:4px 8px">✕</button>
-    </div>
-    <div id="detailModalKpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px"></div>
-    <div style="background:#f8f9fc;border-radius:10px;padding:14px;margin-bottom:14px">
-      <div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:10px">부동 원인별 시간 (h)</div>
-      <div style="position:relative;height:180px"><canvas id="detailBdChart"></canvas></div>
-    </div>
-    <div style="background:#f8f9fc;border-radius:10px;padding:14px;margin-bottom:14px">
-      <div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:10px">보수 항목별 횟수</div>
-      <div style="position:relative;height:160px"><canvas id="detailMtChart"></canvas></div>
-    </div>
-    <div style="background:#f8f9fc;border-radius:10px;padding:14px">
-      <div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:10px">보수 이력 목록</div>
-      <div id="detailMtTable" style="max-height:200px;overflow-y:auto"></div>
-    </div>
-  </div>
-</div>
 
 <script>
 // ══════════════════════════════════════════════
@@ -638,8 +625,7 @@ function buildChart(id,labels,values,colors){
   if(currentChart){currentChart.destroy();currentChart=null;}
   const cv=document.getElementById(id);if(!cv)return;
   currentChart=new Chart(cv.getContext('2d'),{
-    type:'bar',
-    data:{labels,datasets:[{data:values,backgroundColor:colors,borderRadius:4,borderSkipped:false}]},
+    data:{labels,datasets:[{type:'bar',data:values,backgroundColor:colors,borderRadius:4,borderSkipped:false}]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{backgroundColor:'#1e293b',titleColor:'#e2e8f0',bodyColor:'#94a3b8',callbacks:{label:c=>`${c.parsed.y.toFixed(1)}h`}}},
       scales:{
@@ -650,9 +636,8 @@ function buildChart(id,labels,values,colors){
 }
 
 function barListHTML(items,colorFn){
-  if(!items.length)return'<div class="empty-msg" style="padding:20px;text-align:center;color:#94a3b8">데이터 없음</div>';
+  if(!items.length)return'<div class="empty-msg">데이터 없음</div>';
   return items.map(d=>{
-    const pct=(d.h/items[0].h*100).toFixed(1);
     const w=Math.round(d.h/items[0].h*100);
     const c=colorFn(d);
     const cntBadge=d.cnt!=null?`<span style="font-size:10px;color:#fff;background:${c};border-radius:10px;padding:1px 6px;margin-left:4px;opacity:.85">${d.cnt}회</span>`:'';
@@ -662,7 +647,7 @@ function barListHTML(items,colorFn){
           <span style="width:9px;height:9px;border-radius:2px;background:${c};display:inline-block;flex-shrink:0"></span>
           <span class="bar-name">${cleanName(d.name)}</span>${cntBadge}
         </div>
-        <span style="font-size:11px;font-weight:600;color:${c};white-space:nowrap;margin-left:8px">${d.h.toFixed(1)}h <span style="color:#94a3b8;font-weight:400">(${pct}%)</span></span>
+        <span style="font-size:11px;font-weight:600;color:${c};white-space:nowrap;margin-left:8px">${d.h.toFixed(1)}h <span style="color:#94a3b8;font-weight:400">(${(d.h/items[0].h*100).toFixed(1)}%)</span></span>
       </div>
       <div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${c}"></div></div>
     </div>`;
@@ -697,10 +682,10 @@ function renderView(view){
     requestAnimationFrame(()=>{buildChart('cMain',items.map(d=>d.name),items.map(d=>d.h),items.map(d=>d.color));});
 
   }else{
-    const color=EQUIP_META[view]?.color||'#185FA5';
-    const cats=agg[view]?.catArr||[];
-    const tot=agg[view]?.total||0;
-    const cnt=agg[view]?.cnt||0;
+    const color=EQUIP_META[view].color;
+    const cats=agg[view].catArr;
+    const tot=agg[view].total;
+    const cnt=agg[view].cnt;
     document.getElementById('kv1').textContent=tot.toFixed(1)+'h';
     document.getElementById('kv2').textContent=cnt+'건';
     document.getElementById('kv3').textContent=cnt>0?(tot/cnt).toFixed(1)+'h':'-';
@@ -719,8 +704,8 @@ function buildSubTabs(){
   document.getElementById('tabRow').innerHTML=
     TABS.map((name,i)=>{
       const dot=DOTS[name]||(EQUIP_META[name]?EQUIP_META[name].color:'#888');
-      const on=name===currentView?'on':'';
-      const bg=name===currentView?`style="background:${TAB_BG[name]||'#1e3a5f'};border-color:transparent;color:#fff"`:'';
+      const on=i===0?'on':'';
+      const bg=i===0?`style="background:#7C3D8F;border-color:#7C3D8F;color:#fff"`:'';
       return`<div class="sub-tab ${on}" data-v="${name}" onclick="switchSubTab(this)" oncontextmenu="openCtxMenu(event,'bdong','${name}')" ${bg}><span class="sub-tab-dot" style="background:${dot}"></span>${name}</div>`;
     }).join('')
     + `<button class="btn-add-equip" onclick="openModal('modalBdong')" title="설비 추가">＋ 설비 추가</button>`;
@@ -762,7 +747,7 @@ function renderBdongTable(){
     ? [...RECORDS].reverse()
     : [...RECORDS].filter(r=>r.equip===bdongFilterEquip).reverse();
   if(!filtered.length){
-    tbody.innerHTML=`<tr><td colspan="5" class="empty-msg" style="padding:20px;text-align:center;color:#94a3b8">${bdongFilterEquip==='전체'?'입력된 이력이 없습니다.':bdongFilterEquip+' 이력이 없습니다.'}</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="5" class="empty-msg">${bdongFilterEquip==='전체'?'입력된 이력이 없습니다.':bdongFilterEquip+' 이력이 없습니다.'}</td></tr>`;
     return;
   }
   tbody.innerHTML=filtered.map(r=>{
@@ -798,7 +783,474 @@ function deleteRecord(idx){
   syncAllTabs();
 }
 
-// ══ 데이터 저장소 & Firebase 연동 ══
+// ══════════════════════════════════════════════
+// ② 보수 이력 데이터 (구조 개편: item, dates, detail, days)
+// ══════════════════════════════════════════════
+let MAINT_RECORDS=[
+  // 밀 — 50만 로드밀 1호
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'트러니언 오일탱크 세척·보충',dates:'24.09.29~30 / 12.02~03 / 12.11 / 12.29 / 25.02.09~10 / 04.05~06 / 26.01.13',detail:'오일 오염 점검 및 플러싱 세척 후 보충',days:2},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'오일 펌프 교체·라인 청소',dates:'2024.12.03 / 2024.12.29',detail:'토출 압력 저하 펌프 신품 교체 및 배관 드레인',days:1},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'오일 쿨러 교체',dates:'2025.08.20',detail:'냉각 코일 내부 스케일 누적 쿨러 어셈블리 교체',days:1},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'감속기 베어링 교체',dates:'2025.05.25,27 / 2026.06.01~03',detail:'감속기 입력축/출력축 지지 베어링 마모 교체',days:2},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'트러니언 고정볼트 파손 교체',dates:'25.09.04~05 / 11.22~24 / 26.03.08',detail:'피로 파손 볼트 제거 후 고장력 볼트 체결 및 토크 확인',days:2},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'트러니언 메탈베어링 점검·연마',dates:'2025.12.13~14',detail:'저널 접촉면 긁힘 발생 부위 핸드 래핑 및 클리어런스 측정',days:2},
+  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'피니언 기어 베어링 교체',dates:'2025.11.22~24',detail:'구동 피니언 양단 플러머 블록 베어링 교체',days:3},
+  // 밀 — 50만 로드밀 2-1호
+  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'오일펌프 커플링 스파이더 파손 교체',dates:'2024.04.13 / 06.08 / 12.03',detail:'우레탄 완충재 열화 마모로 인한 스파이더 인서트 교체',days:1},
+  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'트러니언 오일탱크 세척·보충',dates:'2024.11.04~07',detail:'탱크 바닥 슬러지 제거 및 오일 신유 교환',days:4},
+  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'타이어 커플링 교체',dates:'2025.01.04 / 2026.01.02',detail:'모터-감속기 간 타이어 엘리먼트 균열로 신품 장착',days:1},
+  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'감속기 교체',dates:'2026.04.25~26',detail:'치면 마모 심화 감속기 스페어로 전체 인양 교체',days:2},
+  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'피니언 기어 베어링 교체',dates:'2026.05.08~10',detail:'베어링 하우징 분해 후 신규 롤러베어링 장착',days:3},
+  // 밀 — 35만 로드밀 1호
+  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'트러니언 청소·오일 교체',dates:'24.01.28~29 / 07.20 / 12.28 / 25.05.20 / 06.28 / 07.05 / 11.24 / 26.01.13 / 02.01 / 04.27 / 05.16~18',detail:'순환 시스템 라인 청소 및 ISO VG 윤활유 교환',days:2},
+  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'감속기 교체',dates:'2025.12.27~31',detail:'내부 기어 파손에 따른 감속기 전체 오버홀 교체',days:5},
+  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'감속기 베어링 교체',dates:'2026.05.12~15',detail:'축 진동 이상 발생으로 인한 내부 베어링 일괄 교체',days:4},
+  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'타이어 커플링 교체',dates:'2025.11.24',detail:'노후 타이어 커플링 탈착 후 교체 센터링 조정',days:1},
+  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'피니언 기어 방향 전환',dates:'2025.12.27~31',detail:'편마모 방지를 위해 피니언 기어 축 반전 장착',days:5},
+  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'메탈 베어링 교체',dates:'2026.02.11 / 2026.03.30',detail:'화이트메탈 베어링 표면 소손으로 스페어 신품 장착',days:1},
+  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'트러니언 고정볼트 교체',dates:'2026.04.07',detail:'이완된 스터드 및 파손 볼트 제거 후 재조임',days:1},
+  // 밀 — 35만 로드밀 2-1호
+  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'감속기 베어링 교체',dates:'2024.03.09~11',detail:'하우징 커버 탈거 및 내륜/외륜 롤러베어링 교체',days:3},
+  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'감속기 베어링·커플링 교체',dates:'2025.05.31~06.01',detail:'중간축 베어링 교체 및 커플링 핀 러버 세트 교체',days:2},
+  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'감속기 커플링 교체',dates:'2026.02.02',detail:'축정렬 오차 보정 및 커플링 어셈블리 교체',days:1},
+  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'모터 교체',dates:'2026.02.02',detail:'모터 권선 절연 저하로 인한 예비 모터 인양 교체',days:1},
+  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'트러니언 청소·오일 교체',dates:'2026.02.07',detail:'오일 드레인 밸브 개방, 잔유 및 이물질 세척',days:1},
+  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'동체 균열부 용접',dates:'2026.02.28',detail:'밀 쉘 외부 미세 크랙 부위 그루빙 및 특수용접 보강',days:1},
+  // 탈수기 — 50만 1호
+  {equip:'탈수기',sub:'50만',unit:'1호',item:'구동 감속기 교체',dates:'2024.06.10 / 2026.05.29',detail:'모터 직결형 감속기 소음 과다로 교체 설치',days:1},
+  {equip:'탈수기',sub:'50만',unit:'1호',item:'스크래퍼 브라켓 제작·교체',dates:'2025.03.30',detail:'케이크 긁개 지지 프레임 변형부 현장 가공 및 교체',days:1},
+  {equip:'탈수기',sub:'50만',unit:'1호',item:'스크래퍼 베어링 교체',dates:'2025.06.29~30',detail:'회전축 양단 피로우 블록 베어링 교체작업',days:2},
+  // 탈수기 — 50만 2호
+  {equip:'탈수기',sub:'50만',unit:'2호',item:'스크래퍼 실린더 교체',dates:'2025.01.05',detail:'공압 실린더 패킹 마모 에어 누기 실린더 교체',days:1},
+  {equip:'탈수기',sub:'50만',unit:'2호',item:'스크래퍼 브라켓 제작·교체',dates:'2025.03.30',detail:'부식된 스크래퍼 베이스 브라켓 철판 보강 제작',days:1},
+  {equip:'탈수기',sub:'50만',unit:'2호',item:'스크래퍼 베어링 교체',dates:'2025.08.30~31',detail:'슬러리 유입으로 착지 불량 베어링 세트 교체',days:2},
+  {equip:'탈수기',sub:'50만',unit:'2호',item:'배출 스크류 감속기 교체',dates:'2026.03.23',detail:'스크류 피더 감속기 샤프트 스플라인 마모 교체',days:1},
+  // 탈수기 — 35만 1호
+  {equip:'탈수기',sub:'35만',unit:'1호',item:'구동 감속기 교체',dates:'2024.10.30',detail:'주 구동부 감속기 신품 교체 및 체인 장력 조절',days:1},
+  {equip:'탈수기',sub:'35만',unit:'1호',item:'스크류 감속기 교체',dates:'2024.11.08 / 2025.11.16',detail:'하부 스크류 감속기 기어 파손 교체',days:1},
+  {equip:'탈수기',sub:'35만',unit:'1호',item:'스크래퍼 베어링 교체',dates:'2024.12.09~10 / 2024.03.24',detail:'좌우 서포트 유닛 베어링 분해 후 신품 조립',days:2},
+  // 탈수기 — 35만 2호
+  {equip:'탈수기',sub:'35만',unit:'2호',item:'감속기 교체',dates:'2024.10.26',detail:'탈수 드럼 구동 감속기 누유 및 베어링 소착 교체',days:1},
+  {equip:'탈수기',sub:'35만',unit:'2호',item:'피니언 기어 교체',dates:'2024.10.26',detail:'드라이브 피니언 기어 맞물림부 마모 부품 교체',days:1},
+  {equip:'탈수기',sub:'35만',unit:'2호',item:'스크류 너트 교체',dates:'2024.02.19 / 12.14 / 2025.06.22',detail:'가압 스크류 볼나사 너트 마모품 교체 및 윤활',days:1},
+  // 드라이어 — 50만
+  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'스토퍼 탈락부 용접·교체',dates:'24.08.15~19 / 25.06.02 / 26.02.22 / 03.09',detail:'드럼 팽창/수축 스토퍼 블록 탈락부 육성 용접 및 보강',days:3},
+  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'동체 균열부 용접 보수',dates:'25.02.01 / 10.19 / 26.03.09',detail:'열응력 크랙 발생 부위 보강판 덧댐 및 특수용접',days:1},
+  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'패드 교체',dates:'24.05.30~31 / 07.14 / 25.08.02~11',detail:'타이어 링 하부 마모 패드 전량 취출 및 신규 패드 삽입',days:4},
+  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'서포트 롤러·베어링 교체',dates:'25.10.01~03 / 10.10~12 / 26.05.02~03',detail:'지지 롤러 면 박리부 및 대형 스페리컬 베어링 교체',days:3},
+  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'가이드 롤러·베어링 교체',dates:'24.11.16~17 / 2026.03.13',detail:'스로스트 가이드 롤러 흔들림 점검 및 베어링 교체',days:2},
+  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'브리징 링 교체',dates:'2026.05.03',detail:'배출구 원료 막힘 방지 브리징 링 신품 장착',days:1},
+  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'모터 교체',dates:'2025.05.21',detail:'주 구동 모터 과열 트립 모터 신품 스와프',days:1},
+  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'버너 스팀트랩 교체',dates:'2025.03.30',detail:'연료 예열 라인 스팀트랩 작동 불량 교체',days:1},
+  // 드라이어 — 35만
+  {equip:'드라이어',sub:'35만 드라이어',unit:'',item:'아톰블로위 교체',dates:'2025.01.09 / 01.10 / 10.20',detail:'연소용 1차 공기 미립화 송풍기 어셈블리 교체',days:1},
+  // 쿨러
+  {equip:'쿨러',sub:'50만 쿨러',unit:'',item:'덕트 마모부 보수',dates:'2025.02.08',detail:'배기 덕트 관통 마모 부위 철판 밴딩 용접',days:1},
+  {equip:'쿨러',sub:'50만 쿨러',unit:'',item:'동체 패드 균열부 용접 보수',dates:'2025.02.23~24',detail:'쿨러 쉘-타이어 체결 패드 파손부 보강 작업',days:2},
+  {equip:'쿨러',sub:'50만 쿨러',unit:'',item:'피니언 기어·베어링 교체',dates:'2026.04.10~12',detail:'치절 마모 피니언 기어 및 양단 지지 베어링 세트 교체',days:3},
+  // 세라믹 필터
+  {equip:'세라믹 필터',sub:'',unit:'1호',item:'아지테이터 구동부 베어링 교체·보수',dates:'2024.07.10',detail:'교반기 샤프트 말단 유니트 베어링 교체',days:1},
+  {equip:'세라믹 필터',sub:'',unit:'1호',item:'아지테이터 스크레이퍼·배관 보수',dates:'2024.06.25~26',detail:'여과판 표면 스크레이퍼 간격 세팅 및 드레인관 교체',days:2},
+  {equip:'세라믹 필터',sub:'',unit:'1호',item:'아지테이터 베어링 교체·용접 보강',dates:'2025.12.21~23',detail:'하우징 균열 용접 살돋움 및 구름베어링 신품 교체',days:3},
+  {equip:'세라믹 필터',sub:'',unit:'2호',item:'아지테이터 샤프트·베어링 교체',dates:'24.02.23~24 / 06.12 / 06.27 / 07.29 / 25.12.24~26',detail:'슬러리 마모로 휜 메인 샤프트 인출 제작 및 교체',days:2},
+  {equip:'세라믹 필터',sub:'',unit:'3호',item:'아지테이터 베어링 교체',dates:'2024.05.18 / 2025.12.03',detail:'방수 씰 파손으로 오염된 교반 베어링 교체',days:1},
+  {equip:'세라믹 필터',sub:'',unit:'4호',item:'아지테이터 샤프트·베어링 교체',dates:'2025.09.01',detail:'샤프트 마모 단차부 가공 및 전후 베어링 조립',days:1},
+  {equip:'세라믹 필터',sub:'',unit:'4호',item:'진공펌프 교체',dates:'2025.09.09',detail:'수봉식 진공펌프 내부 임펠러 손상 펌프 단체 교체',days:1},
+  {equip:'세라믹 필터',sub:'',unit:'5호',item:'아지테이터 커플링·베어링 교체',dates:'2024.07~08 / 25.07.20~21 / 07.26~27',detail:'조합 커플링 우레탄 교환 및 베어링 그리스 재충진 교체',days:2},
+  {equip:'세라믹 필터',sub:'',unit:'5호',item:'감속기 교체',dates:'2025.07.26~27',detail:'웜 감속기 웜휠 마모 교체 작업',days:2},
+  {equip:'세라믹 필터',sub:'',unit:'6호',item:'아지테이터 커플링·베어링 교체',dates:'2024.02.25~26 / 2024.09~10',detail:'구동측 조인트 커플링 및 베어링 하우징 일체 교체',days:2},
+  {equip:'세라믹 필터',sub:'',unit:'7호',item:'아지테이터 베어링·커플링 교체',dates:'2024.11.23 / 25.11.29 / 12.01',detail:'베어링 그리스 누설 차단 씰링 처리 및 커플링 점검 교체',days:1},
+  {equip:'세라믹 필터',sub:'',unit:'7호',item:'드럼 감속기 교체',dates:'2024.12.24',detail:'세라믹 드럼 회전 싸이클로드 감속기 교체',days:1},
+  {equip:'세라믹 필터',sub:'',unit:'8호',item:'아지테이터 커플링·베어링 교체',dates:'25.07.02~03 / 09.02~03 / 12.03',detail:'아지테이터 흔들림 해소 및 신규 베어링 조립',days:2},
+  // 보일러
+  {equip:'보일러',sub:'3ton 보일러',unit:'',item:'버너 모터 교체',dates:'2024.03.19',detail:'송풍 겸용 버너 모터 소착 신품 교환',days:1},
+  {equip:'보일러',sub:'3ton 보일러',unit:'',item:'버너 실린더·노즐 교체',dates:'24.04.17 / 11.29 / 12.06~07 / 26.01.28 / 26.03.02',detail:'연료 분사 팁 카본 침적 노즐 팁 및 에어 실린더 교체',days:2},
+  {equip:'보일러',sub:'3ton 보일러',unit:'',item:'압력계 라인 가스켓·패킹 교체',dates:'2024.03.31 / 2026.04.27',detail:'증기 누설 부위 테프론 가스켓 및 나선형 패킹 전면 교체',days:1},
+  {equip:'보일러',sub:'3ton 보일러',unit:'',item:'동체 냉각호스 설치',dates:'2025.01.04',detail:'외벽 온도 완화 순환 냉각 라인 신규 배관 작업',days:1},
+  // 집진기 블로워 임펠러
+  {equip:'집진기 블로워 임펠러',sub:'',unit:'',item:'50만 드라이어 임펠러 교체',dates:'2025.02.15~16',detail:'규사 분진에 의한 임펠러 날개 마모 관통 신품 밸런싱 교체',days:2},
+  {equip:'집진기 블로워 임펠러',sub:'',unit:'',item:'35만 드라이어 베어링 교체',dates:'2025.03.21~23',detail:'고속 회전 블로워 샤프트 베어링 고온 트립 교체작업',days:3},
+  {equip:'집진기 블로워 임펠러',sub:'',unit:'',item:'재자선 베어링 교체',dates:'2024.09.14~15',detail:'집진 송풍기 양단 베어링 하우징 오버홀 및 교체',days:2},
+  // 시크너 용수펌프
+  {equip:'시크너 용수펌프',sub:'',unit:'',item:'1호 펌프 교체',dates:'2024.03.19 / 2025.01.12',detail:'케이싱 마모로 인한 양정 저하 펌프 단체 스페어 교체',days:1},
+  {equip:'시크너 용수펌프',sub:'',unit:'',item:'3호 펌프 교체',dates:'2024.10.08~09 / 2025.02.22 / 2026.05.25',detail:'메카니컬 씰 파손 누수 펌프 분해 오버홀 교체',days:2},
+  {equip:'시크너 용수펌프',sub:'',unit:'',item:'4호 펌프 교체',dates:'2024.11.10 / 2025.07.06 / 2026.05.24',detail:'흡입구 마모 임펠러 및 펌프 전체 교체작업',days:1},
+  // 조크러셔
+  {equip:'조크러셔',sub:'',unit:'상부',item:'스칼핑 바 라이너 교체',dates:'2024.10.19',detail:'원석 충격 마모된 그리즐리 바 상부 보호 라이너 교체',days:1},
+  {equip:'조크러셔',sub:'',unit:'상부',item:'스윙죠 베어링 파손 교체',dates:'2025.02.11~12',detail:'진동 충격으로 인한 메인 편심축 베어링 분해 인출 교체',days:2},
+  {equip:'조크러셔',sub:'',unit:'파쇄',item:'스윙죠 플레이트 및 라이너 교체',dates:'2025.10.25~26',detail:'파쇄실 고정/이동 죠플레이트 마모 한계 도달 교체작업',days:2},
+];
+
+const MAINT_EQUIPS=['밀','탈수기','드라이어','쿨러','세라믹 필터','보일러','집진기 블로워 임펠러','시크너 용수펌프','조크러셔'];
+const MAINT_COLORS={'밀':'#3B6D11','탈수기':'#993556','드라이어':'#BA7517','쿨러':'#0F6E56','세라믹 필터':'#185FA5','보일러':'#5F5E5A','집진기 블로워 임펠러':'#7C3D8F','시크너 용수펌프':'#0E7490','조크러셔':'#854F0B'};
+const MAINT_LIGHTS={'밀':'#EAF3DE','탈수기':'#FBEAF0','드라이어':'#FAEEDA','쿨러':'#E1F5EE','세라믹 필터':'#E6F1FB','보일러':'#F1EFE8','집진기 블로워 임펠러':'#F3E8FF','시크너 용수펌프':'#E0F7FA','조크러셔':'#FFF3E0'};
+
+// 요청하신 순서: 보수항목, 날짜, 상세작업내역, 소요일
+let MAINT_COL_HEADERS=['보수항목','날짜','상세작업내역','소요일'];
+let currentMaintEquip=MAINT_EQUIPS[0];
+let currentMaintSub=null;
+let currentMaintUnit=null;
+let maintInputOpen=false;
+
+function buildMaintSidebar(){
+  const sidebar=document.getElementById('maintSidebar');
+  sidebar.innerHTML=
+    MAINT_EQUIPS.map(name=>{
+      const color=MAINT_COLORS[name];
+      const cnt=MAINT_RECORDS.filter(r=>r.equip===name).length;
+      return`<button class="maint-equip-btn${name===currentMaintEquip?' on':''}" onclick="selectMaintEquip(\`${name}\`)" oncontextmenu="openCtxMenu(event,'maint','${name}')" style="${name===currentMaintEquip?`background:${color};border-color:${color};color:#fff`:''}">
+        <span style="display:flex;justify-content:space-between;align-items:center">
+          <span>${name}</span>
+          <span style="font-size:10px;opacity:.7">${cnt}건</span>
+        </span>
+      </button>`;
+    }).join('')
+    + `<button class="btn-add-equip" style="margin-top:6px;width:100%;justify-content:center" onclick="openModal('modalMaint')">＋ 설비 추가</button>`;
+}
+
+function selectMaintEquip(name){
+  currentMaintEquip=name;
+  const records=MAINT_RECORDS.filter(r=>r.equip===name);
+  const subs=[...new Set(records.map(r=>r.sub).filter(Boolean))];
+  currentMaintSub=subs.length?subs[0]:null;
+  const units=[...new Set(records.filter(r=>!currentMaintSub||r.sub===currentMaintSub).map(r=>r.unit).filter(Boolean))];
+  currentMaintUnit=units.length?units[0]:null;
+  maintInputOpen=false;
+  buildMaintSidebar();
+  renderMaintContent();
+}
+
+function renderMaintContent(){
+  const color=MAINT_COLORS[currentMaintEquip];
+  const light=MAINT_LIGHTS[currentMaintEquip];
+  const records=MAINT_RECORDS.filter(r=>r.equip===currentMaintEquip);
+  const subs=[...new Set(records.map(r=>r.sub).filter(Boolean))];
+
+  let html=`<div class="maint-header" style="color:${color}">${currentMaintEquip}</div>
+  <div class="maint-sub-header">보수 이력 · 2024–2026 · 총 ${records.length}건</div>`;
+
+  if(subs.length>1){
+    if(!currentMaintSub) currentMaintSub=subs[0];
+    html+=`<div class="detail-tab-row">
+      ${subs.map(s=>`<div class="detail-tab${s===currentMaintSub?' on':''}" onclick="selectMaintSub('${s}')" style="${s===currentMaintSub?`background:${color};border-color:${color};color:#fff`:''}">
+        ${s}
+      </div>`).join('')}
+    </div>`;
+  }else if(subs.length===1&&!currentMaintSub){currentMaintSub=subs[0];}
+
+  const subRecords=currentMaintSub?records.filter(r=>r.sub===currentMaintSub):records;
+  const units=[...new Set(subRecords.map(r=>r.unit).filter(Boolean))];
+
+  if(units.length>1){
+    if(!currentMaintUnit||!units.includes(currentMaintUnit)) currentMaintUnit=units[0];
+    html+=`<div class="detail-tab-row">
+      ${units.map(u=>`<div class="detail-tab${u===currentMaintUnit?' on':''}" onclick="selectMaintUnit('${u}')" style="${u===currentMaintUnit?`background:${color+'33'};border-color:${color};color:${color}`:''}; font-size:11px">
+        ${u}
+      </div>`).join('')}
+    </div>`;
+  }else if(units.length===1){currentMaintUnit=units[0];}
+
+  const finalRecords=currentMaintUnit?subRecords.filter(r=>r.unit===currentMaintUnit):subRecords;
+
+  // 상단 액션 바: 엑셀 내보내기 & 추가 버튼
+  html+=`<div class="maint-add-row">
+    <div><button class="btn-excel" onclick="exportToExcel('maint')">📥 ${currentMaintEquip} 보수이력 엑셀 다운로드</button></div>
+    <div><button class="btn-maint-add" onclick="toggleMaintInput()">＋ 보수 이력 추가</button></div>
+  </div>
+  <div class="maint-input-area${maintInputOpen?' open':''}" id="maintInputArea">
+    <div class="maint-form-grid">
+      <div class="form-group"><div class="form-label">${MAINT_COL_HEADERS[0]}</div><input class="form-input" id="mfItem" placeholder="예: 감속기 베어링 교체"></div>
+      <div class="form-group"><div class="form-label">${MAINT_COL_HEADERS[1]}</div><input class="form-input" id="mfDates" placeholder="예: 2026.06.22"></div>
+      <div class="form-group"><div class="form-label">${MAINT_COL_HEADERS[2]}</div><input class="form-input" id="mfDetail" placeholder="예: 피니언 양단 베어링 신품 교체"></div>
+      <div class="form-group"><div class="form-label">${MAINT_COL_HEADERS[3]}</div><input class="form-input" type="number" id="mfDays" min="1" placeholder="1"></div>
+      <button class="btn-add" onclick="addMaintRecord()" style="height:34px">추가</button>
+    </div>
+  </div>`;
+
+  // 테이블 헤더: 요청 순서 4열 (보수항목, 날짜, 상세작업내역, 소요일)
+  if(finalRecords.length){
+    html+=`<table class="maint-table" id="maintTable">
+      <thead><tr>
+        <th style="width:25%">${MAINT_COL_HEADERS[0]}</th>
+        <th style="width:25%">${MAINT_COL_HEADERS[1]}</th>
+        <th style="width:30%">${MAINT_COL_HEADERS[2]}</th>
+        <th style="width:10%;text-align:center">${MAINT_COL_HEADERS[3]}</th>
+        <th style="width:10%;text-align:right">관리</th>
+      </tr></thead>
+      <tbody id="maintTbody">
+        ${finalRecords.map(r=>{
+          const realIdx=MAINT_RECORDS.indexOf(r);
+          const detailText = r.detail || '—';
+          return`<tr id="mrow_${realIdx}">
+            <td id="mcell_item_${realIdx}" style="font-weight:600">${r.item}</td>
+            <td id="mcell_dates_${realIdx}"><div class="date-chips">${r.dates.split('/').map(d=>d.trim()).filter(d=>d.length>2).map(d=>`<span class="date-chip">${d}</span>`).join('')}</div></td>
+            <td id="mcell_detail_${realIdx}" style="color:#475569">${detailText}</td>
+            <td id="mcell_days_${realIdx}" style="text-align:center"><span class="days-badge" style="background:${light};color:${color}">${r.days}일</span></td>
+            <td><div class="action-btns">
+              <button class="btn-maint-edit" onclick="startEdit(${realIdx})">수정</button>
+              <button class="btn-maint-del" onclick="deleteMaintRecord(${realIdx})">삭제</button>
+            </div></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+  }else{
+    html+=`<div class="empty-msg" style="padding:40px;background:#fff;border-radius:10px;border:1px solid #e2e8f0">등록된 보수 이력이 없습니다</div>`;
+  }
+
+  document.getElementById('maintContent').innerHTML=html;
+}
+
+// ── 인라인 수정 ──────────────────────────────────────
+function startEdit(idx){
+  const r=MAINT_RECORDS[idx];
+  const row=document.getElementById(`mrow_${idx}`);
+  if(!row)return;
+  row.classList.add('editing-row');
+  document.getElementById(`mcell_item_${idx}`).innerHTML=
+    `<input class="edit-input" id="edit_item_${idx}" value="${r.item.replace(/"/g,'&quot;')}">`;
+  document.getElementById(`mcell_dates_${idx}`).innerHTML=
+    `<input class="edit-input" id="edit_dates_${idx}" value="${r.dates.replace(/"/g,'&quot;')}">`;
+  document.getElementById(`mcell_detail_${idx}`).innerHTML=
+    `<input class="edit-input" id="edit_detail_${idx}" value="${(r.detail||'').replace(/"/g,'&quot;')}">`;
+  document.getElementById(`mcell_days_${idx}`).innerHTML=
+    `<input class="edit-input" type="number" id="edit_days_${idx}" value="${r.days}" min="1" style="width:54px;text-align:center">`;
+  
+  row.cells[4].innerHTML=`<div class="action-btns">
+    <button class="btn-maint-ok" onclick="saveEdit(${idx})">✓ 저장</button>
+    <button class="btn-maint-cancel" onclick="cancelEdit(${idx})">✕ 취소</button>
+  </div>`;
+}
+
+function saveEdit(idx){
+  const item=document.getElementById(`edit_item_${idx}`)?.value.trim();
+  const dates=document.getElementById(`edit_dates_${idx}`)?.value.trim();
+  const detail=document.getElementById(`edit_detail_${idx}`)?.value.trim()||'—';
+  const days=parseInt(document.getElementById(`edit_days_${idx}`)?.value)||1;
+  if(!item||!dates){alert('보수 항목과 날짜를 입력해 주세요.');return;}
+  MAINT_RECORDS[idx].item=item;
+  MAINT_RECORDS[idx].dates=dates;
+  MAINT_RECORDS[idx].detail=detail;
+  MAINT_RECORDS[idx].days=days;
+  buildMaintSidebar();
+  renderMaintContent();
+  autoSave();
+  syncAllTabs();
+}
+
+function cancelEdit(idx){
+  renderMaintContent();
+}
+
+function selectMaintSub(sub){
+  currentMaintSub=sub;
+  currentMaintUnit=null;
+  maintInputOpen=false;
+  renderMaintContent();
+}
+
+function selectMaintUnit(unit){
+  currentMaintUnit=unit;
+  maintInputOpen=false;
+  renderMaintContent();
+}
+
+function toggleMaintInput(){
+  maintInputOpen=!maintInputOpen;
+  renderMaintContent();
+}
+
+function addMaintRecord(){
+  const item=document.getElementById('mfItem').value.trim();
+  const dates=document.getElementById('mfDates').value.trim();
+  const detail=document.getElementById('mfDetail').value.trim()||'—';
+  const days=parseInt(document.getElementById('mfDays').value)||1;
+  if(!item||!dates){alert('보수 항목과 날짜를 입력해 주세요.');return;}
+  const sub=currentMaintSub||'';
+  const unit=currentMaintUnit||'';
+  MAINT_RECORDS.push({equip:currentMaintEquip,sub,unit,item,dates,detail,days});
+  maintInputOpen=false;
+  buildMaintSidebar();
+  renderMaintContent();
+  autoSave();
+  syncAllTabs();
+  refreshAllYearTabs();
+}
+
+function deleteMaintRecord(idx){
+  if(!confirm('이 보수 이력을 삭제하시겠습니까?'))return;
+  MAINT_RECORDS.splice(idx,1);
+  buildMaintSidebar();
+  renderMaintContent();
+  autoSave();
+  syncAllTabs();
+}
+
+// ══════════════════════════════════════════════
+// 엑셀 내보내기 핵심 함수
+// 순서: [설비구분, 서브구분, 상세설비] + [보수항목, 날짜, 상세작업내역, 소요일]
+// ══════════════════════════════════════════════
+function exportToExcel(type){
+  const wb = XLSX.utils.book_new();
+
+  if(type==='maint'){
+    const records = MAINT_RECORDS.filter(r=>r.equip===currentMaintEquip);
+    const subRecords = currentMaintSub ? records.filter(r=>r.sub===currentMaintSub) : records;
+    const finalRecords = currentMaintUnit ? subRecords.filter(r=>r.unit===currentMaintUnit) : subRecords;
+
+    const data = finalRecords.map(r=>({
+      '설비명': r.equip,
+      '구분': r.sub || '-',
+      '호기': r.unit || '-',
+      '보수항목': r.item,
+      '날짜': r.dates,
+      '상세작업내역': r.detail || '-',
+      '소요일': r.days + '일'
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, `${currentMaintEquip}_보수이력`);
+    XLSX.writeFile(wb, `${currentMaintEquip}_보수이력_${getTodayDateStr().replace(/\//g,'')}.xlsx`);
+
+  } else if(type==='bdong'){
+    const data = RECORDS.map(r=>({
+      '일자': r.date,
+      '설비명': r.equip,
+      '부동시간(h)': r.hour,
+      '부동내역(고장원인)': r.cause
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, '부동이력');
+    XLSX.writeFile(wb, `설비부동이력_${getTodayDateStr().replace(/\//g,'')}.xlsx`);
+
+  } else if(type==='all'){
+    // 전체 보수이력 시트 (요청 순서 보수항목 -> 날짜 -> 상세작업내역 -> 소요일 반영)
+    const maintData = MAINT_RECORDS.map(r=>({
+      '설비구분': r.equip,
+      '상세구분': r.sub || '-',
+      '호기': r.unit || '-',
+      '보수항목': r.item,
+      '날짜': r.dates,
+      '상세작업내역': r.detail || '-',
+      '소요일': r.days + '일'
+    }));
+    const wsMaint = XLSX.utils.json_to_sheet(maintData);
+    XLSX.utils.book_append_sheet(wb, wsMaint, '전체_보수이력');
+
+    // 부동이력 시트
+    const bdongData = RECORDS.map(r=>({
+      '일자': r.date,
+      '설비명': r.equip,
+      '부동시간(h)': r.hour,
+      '부동내역': r.cause
+    }));
+    const wsBdong = XLSX.utils.json_to_sheet(bdongData);
+    XLSX.utils.book_append_sheet(wb, wsBdong, '전체_부동이력');
+
+    XLSX.writeFile(wb, `선광설비_종합데이터_${getTodayDateStr().replace(/\//g,'')}.xlsx`);
+  }
+}
+
+// ══ 메인 탭 전환 ══
+function switchMainTab(page,btn){
+  document.querySelectorAll('.header-tab').forEach(b=>{b.classList.remove('on');});
+  document.querySelectorAll(`.header-tab[data-page="${page}"]`).forEach(b=>b.classList.add('on'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('on'));
+  const sn=document.getElementById('snav-'+page);
+  if(sn) sn.classList.add('on');
+  document.querySelectorAll('.page').forEach(p=>{p.style.display='none';});
+  currentPage=page;
+  if(page==='bdong'){
+    document.getElementById('pageBdong').style.display='';
+  }else if(page==='maint'){
+    document.getElementById('pageMaint').style.display='';
+    buildMaintSidebar();renderMaintContent();
+  }else if(page==='analysis'){
+    document.getElementById('pageAnalysis').style.display='';
+    renderAnalysis();
+  }
+  updateInsightPanel(page);
+}
+
+// ══ 데이터 저장 및 동기화 ══
+function syncAllTabs(){
+  refreshAllYearTabs();
+  updateYearLabels();
+  if(currentPage==='analysis') renderAnalysis();
+  if(currentPage==='bdong') renderView(currentView);
+}
+
+function refreshAllYearTabs(){
+  buildYearTabs('timelineTabs', currentTimelineYear, 'switchTimelineTab');
+  buildYearTabs('hbarTabs', currentHBarYear, 'switchHBarTab');
+  updateYearLabels();
+}
+
+function getYearRange(){
+  const years = getAllYears();
+  if(!years.length) return '2024–2026';
+  const min = years[0];
+  const max = years[years.length-1];
+  return min===max ? min : `${min}–${max}`;
+}
+
+function updateYearLabels(){
+  const range = getYearRange();
+  const el1 = document.getElementById('labelBdong');
+  const el2 = document.getElementById('labelMaint');
+  const el3 = document.getElementById('labelAnalysis');
+  const el4 = document.getElementById('titleBdong');
+  const el5 = document.getElementById('footerYear');
+  if(el1) el1.textContent = `${range} ANNUAL MAINTENANCE REPORT`;
+  if(el2) el2.textContent = `${range} MAINTENANCE HISTORY`;
+  if(el3) el3.textContent = `COMPREHENSIVE ANALYSIS · ${range}`;
+  if(el4) el4.textContent = '선광 설비 부동 관리';
+  if(el5) el5.textContent = `선광 설비 관리 통합 시스템 · ${range}`;
+}
+
+function updateInsightPanel(page){
+  const panel = document.getElementById('insightContent');
+  if(!panel) return;
+  const agg = aggregate();
+  const totalH = +RECORDS.reduce((s,r)=>s+r.hour,0).toFixed(1);
+  const totalCnt = RECORDS.length;
+
+  const worst = getEquipNames().map(n=>({n, h:agg[n]?.total||0})).sort((a,b)=>b.h-a.h)[0];
+  const TODAY_ABS = parseAbsDay(getTodayDateStr());
+  let overdue = 0;
+  MAINT_RECORDS.forEach(mr=>{
+    const days=getMaintAbsDays(mr.dates).sort((a,b)=>a-b);
+    if(days.length<2) return;
+    const gaps=[];for(let i=1;i<days.length;i++)gaps.push(days[i]-days[i-1]);
+    const avg=Math.round(gaps.reduce((s,g)=>s+g,0)/gaps.length);
+    const elapsed=TODAY_ABS-Math.max(...days);
+    if(elapsed>avg) overdue++;
+  });
+
+  panel.innerHTML = `
+    ${worst?`<div class="insight-tip">
+      <div class="insight-tip-title">⚠️ 주의 설비</div>
+      <div class="insight-tip-text">${worst.n}의 부동시간이 ${worst.h.toFixed(1)}h로<br>가장 높습니다.<br>예방 정비 및 주요 부품 점검을 권장합니다.</div>
+    </div>`:''}
+    ${overdue>0?`<div class="insight-tip" style="background:#FFF7ED;border-color:#FED7AA">
+      <div class="insight-tip-title" style="color:#C2410C">🔔 정비 주기 초과</div>
+      <div class="insight-tip-text" style="color:#9A3412">${overdue}개 항목이 평균 보수주기를 초과했습니다. 종합 분석 탭에서 확인하세요.</div>
+    </div>`:''}
+    <div class="insight-card">
+      <div class="insight-card-title">🕐 총 부동시간</div>
+      <div class="insight-card-val" style="color:#185FA5">${totalH}h</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-card-title">📋 총 발생건수</div>
+      <div class="insight-card-val" style="color:#0F6E56">${totalCnt}건</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-card-title">🔧 총 보수 항목</div>
+      <div class="insight-card-val" style="color:#BA7517">${MAINT_RECORDS.length}건</div>
+    </div>
+  `;
+}
+
 const STORAGE_KEY='선광설비관리_v1';
 const DEFAULT_BD_EQUIPS=['드라이어','시크너','리클레이머','탈수기','밀','쿨러','보일러'];
 const DEFAULT_MT_EQUIPS=['밀','탈수기','드라이어','쿨러','세라믹 필터','보일러','집진기 블로워 임펠러','시크너 용수펌프','조크러셔'];
@@ -892,433 +1344,7 @@ function showToast(msg,type='save'){
   t._timer=setTimeout(()=>{t.style.opacity='0';},2500);
 }
 
-// ══════════════════════════════════════════════
-// ② 보수 이력 데이터 & 로직
-// ══════════════════════════════════════════════
-let MAINT_RECORDS=[
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'트러니언 오일탱크 세척·보충',dates:'24.09.29~30 / 12.02~03 / 12.11 / 12.29 / 25.02.09~10 / 04.05~06 / 26.01.13',days:2},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'오일 펌프 교체·라인 청소',dates:'2024.12.03 / 2024.12.29',days:1},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'오일 쿨러 교체',dates:'2025.08.20',days:1},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'감속기 베어링 교체',dates:'2025.05.25,27 / 2026.06.01~03',days:2},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'트러니언 고정볼트 파손 교체',dates:'25.09.04~05 / 11.22~24 / 26.03.08',days:2},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'트러니언 메탈베어링 점검·연마',dates:'2025.12.13~14',days:2},
-  {equip:'밀',sub:'50만 로드밀',unit:'1호 밀',item:'피니언 기어 베어링 교체',dates:'2025.11.22~24',days:3},
-  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'오일펌프 커플링 스파이더 파손 교체',dates:'2024.04.13 / 06.08 / 12.03',days:1},
-  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'트러니언 오일탱크 세척·보충',dates:'2024.11.04~07',days:4},
-  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'타이어 커플링 교체',dates:'2025.01.04 / 2026.01.02',days:1},
-  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'감속기 교체',dates:'2026.04.25~26',days:2},
-  {equip:'밀',sub:'50만 로드밀',unit:'2-1호 밀',item:'피니언 기어 베어링 교체',dates:'2026.05.08~10',days:3},
-  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'트러니언 청소·오일 교체',dates:'24.01.28~29 / 07.20 / 12.28 / 25.05.20 / 06.28 / 07.05 / 11.24 / 26.01.13 / 02.01 / 04.27 / 05.16~18',days:2},
-  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'감속기 교체',dates:'2025.12.27~31',days:5},
-  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'감속기 베어링 교체',dates:'2026.05.12~15',days:4},
-  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'타이어 커플링 교체',dates:'2025.11.24',days:1},
-  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'피니언 기어 방향 전환',dates:'2025.12.27~31',days:5},
-  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'메탈 베어링 교체',dates:'2026.02.11 / 2026.03.30',days:1},
-  {equip:'밀',sub:'35만 로드밀',unit:'1호 밀',item:'트러니언 고정볼트 교체',dates:'2026.04.07',days:1},
-  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'감속기 베어링 교체',dates:'2024.03.09~11',days:3},
-  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'감속기 베어링·커플링 교체',dates:'2025.05.31~06.01 (1/2)',days:2},
-  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'감속기 커플링 교체',dates:'2026.02.02',days:1},
-  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'모터 교체',dates:'2026.02.02',days:1},
-  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'트러니언 청소·오일 교체',dates:'2026.02.07',days:1},
-  {equip:'밀',sub:'35만 로드밀',unit:'2-1호 밀',item:'동체 균열부 용접',dates:'2026.02.28',days:1},
-  {equip:'탈수기',sub:'50만',unit:'1호',item:'구동 감속기 교체',dates:'2024.06.10 / 2026.05.29',days:1},
-  {equip:'탈수기',sub:'50만',unit:'1호',item:'스크래퍼 브라켓 제작·교체',dates:'2025.03.30',days:1},
-  {equip:'탈수기',sub:'50만',unit:'1호',item:'스크래퍼 베어링 교체',dates:'2025.06.29~30, 1/2',days:2},
-  {equip:'탈수기',sub:'50만',unit:'2호',item:'스크래퍼 실린더 교체',dates:'2025.01.05',days:1},
-  {equip:'탈수기',sub:'50만',unit:'2호',item:'스크래퍼 브라켓 제작·교체',dates:'2025.03.30',days:1},
-  {equip:'탈수기',sub:'50만',unit:'2호',item:'스크래퍼 베어링 교체',dates:'2025.08.30~31',days:2},
-  {equip:'탈수기',sub:'50만',unit:'2호',item:'배출 스크류 감속기 교체',dates:'2026.03.23',days:1},
-  {equip:'탈수기',sub:'35만',unit:'1호',item:'구동 감속기 교체',dates:'2024.10.30',days:1},
-  {equip:'탈수기',sub:'35만',unit:'1호',item:'스크류 감속기 교체',dates:'2024.11.08 / 2025.11.16',days:1},
-  {equip:'탈수기',sub:'35만',unit:'1호',item:'스크래퍼 베어링 교체',dates:'2024.12.09~10 / 2024.03.24',days:2},
-  {equip:'탈수기',sub:'35만',unit:'2호',item:'감속기 교체',dates:'2024.10.26',days:1},
-  {equip:'탈수기',sub:'35만',unit:'2호',item:'피니언 기어 교체',dates:'2024.10.26',days:1},
-  {equip:'탈수기',sub:'35만',unit:'2호',item:'스크류 너트 교체',dates:'2024.02.19 / 12.14 / 2025.06.22',days:1},
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'스토퍼 탈락부 용접·교체',dates:'24.08.15~19 / 25.06.02 / 26.02.22 / 03.09',days:3},
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'동체 균열부 용접 보수',dates:'25.02.01 / 10.19 / 26.03.09~',days:1},
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'패드 교체',dates:'24.05.30~31 / 07.14 / 25.08.02~11',days:4},
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'서포트 롤러·베어링 교체',dates:'25.10.01~03 / 10.10~12 / 26.05.02~03',days:3},
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'가이드 롤러·베어링 교체',dates:'24.11.16~17 / 2026.03.13',days:2},
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'브리징 링 교체',dates:'2026.05.03',days:1},
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'모터 교체',dates:'2025.05.21',days:1},
-  {equip:'드라이어',sub:'50만 드라이어',unit:'',item:'버너 스팀트랩 교체',dates:'2025.03.30',days:1},
-  {equip:'드라이어',sub:'35만 드라이어',unit:'',item:'아톰블로위 교체',dates:'2025.01.09 / 01.10 / 10.20',days:1},
-  {equip:'쿨러',sub:'50만 쿨러',unit:'',item:'덕트 마모부 보수',dates:'2025.02.08',days:1},
-  {equip:'쿨러',sub:'50만 쿨러',unit:'',item:'동체 패드 균열부 용접 보수',dates:'2025.02.23~24',days:2},
-  {equip:'쿨러',sub:'50만 쿨러',unit:'',item:'피니언 기어·베어링 교체',dates:'2026.04.10~12',days:3},
-  {equip:'세라믹 필터',sub:'',unit:'1호',item:'아지테이터 구동부 베어링 교체·보수',dates:'2024.07.10',days:1},
-  {equip:'세라믹 필터',sub:'',unit:'1호',item:'아지테이터 스크레이퍼·배관 보수',dates:'2024.06.25~26',days:2},
-  {equip:'세라믹 필터',sub:'',unit:'1호',item:'아지테이터 베어링 교체·용접 보강',dates:'2025.12.21~23',days:3},
-  {equip:'세라믹 필터',sub:'',unit:'2호',item:'아지테이터 샤프트·베어링 교체',dates:'24.02.23~24 / 06.12 / 06.27 / 07.29 / 25.12.24~26',days:2},
-  {equip:'세라믹 필터',sub:'',unit:'3호',item:'아지테이터 베어링 교체',dates:'2024.05.18 / 2025.12.03',days:1},
-  {equip:'세라믹 필터',sub:'',unit:'4호',item:'아지테이터 샤프트·베어링 교체',dates:'2025.09.01',days:1},
-  {equip:'세라믹 필터',sub:'',unit:'4호',item:'진공펌프 교체',dates:'2025.09.09',days:1},
-  {equip:'세라믹 필터',sub:'',unit:'5호',item:'아지테이터 커플링·베어링 교체',dates:'2024.07~08 / 25.07.20~21 / 07.26~27',days:2},
-  {equip:'세라믹 필터',sub:'',unit:'5호',item:'감속기 교체',dates:'2025.07.26~27',days:2},
-  {equip:'세라믹 필터',sub:'',unit:'6호',item:'아지테이터 커플링·베어링 교체',dates:'2024.02.25~26 / 2024.09~10',days:2},
-  {equip:'세라믹 필터',sub:'',unit:'7호',item:'아지테이터 베어링·커플링 교체',dates:'2024.11.23 / 25.11.29 / 12.01',days:1},
-  {equip:'세라믹 필터',sub:'',unit:'7호',item:'드럼 감속기 교체',dates:'2024.12.24',days:1},
-  {equip:'세라믹 필터',sub:'',unit:'8호',item:'아지테이터 커플링·베어링 교체',dates:'25.07.02~03 / 09.02~03 / 12.03',days:2},
-  {equip:'보일러',sub:'3ton 보일러',unit:'',item:'버너 모터 교체',dates:'2024.03.19',days:1},
-  {equip:'보일러',sub:'3ton 보일러',unit:'',item:'버너 실린더·노즐 교체',dates:'24.04.17 / 11.29 / 12.06~07 / 26.01.28 / 26.03.02',days:2},
-  {equip:'보일러',sub:'3ton 보일러',unit:'',item:'압력계 라인 가스켓·패킹 교체',dates:'2024.03.31 / 2026.04.27',days:1},
-  {equip:'보일러',sub:'3ton 보일러',unit:'',item:'동체 냉각호스 설치',dates:'2025.01.04',days:1},
-  {equip:'집진기 블로워 임펠러',sub:'',unit:'',item:'50만 드라이어 임펠러 교체',dates:'2025.02.15~16',days:2},
-  {equip:'집진기 블로워 임펠러',sub:'',unit:'',item:'35만 드라이어 베어링 교체',dates:'2025.03.21~23',days:3},
-  {equip:'집진기 블로워 임펠러',sub:'',unit:'',item:'재자선 베어링 교체',dates:'2024.09.14~15',days:2},
-  {equip:'시크너 용수펌프',sub:'',unit:'',item:'1호 펌프 교체',dates:'2024.03.19 / 2025.01.12',days:1},
-  {equip:'시크너 용수펌프',sub:'',unit:'',item:'3호 펌프 교체',dates:'2024.10.08~09 / 2025.02.22 / 2026.05.25',days:2},
-  {equip:'시크너 용수펌프',sub:'',unit:'',item:'4호 펌프 교체',dates:'2024.11.10 / 2025.07.06 / 2026.05.24',days:1},
-  {equip:'조크러셔',sub:'',unit:'상부',item:'스칼핑 바 라이너 교체',dates:'2024.10.19',days:1},
-  {equip:'조크러셔',sub:'',unit:'상부',item:'스윙죠 베어링 파손 교체',dates:'2025.02.11~12',days:2},
-  {equip:'조크러셔',sub:'',unit:'파쇄',item:'스윙죠 플레이트 및 라이너 교체',dates:'2025.10.25~26',days:2},
-];
-
-const MAINT_EQUIPS=['밀','탈수기','드라이어','쿨러','세라믹 필터','보일러','집진기 블로워 임펠러','시크너 용수펌프','조크러셔'];
-const MAINT_COLORS={'밀':'#3B6D11','탈수기':'#993556','드라이어':'#BA7517','쿨러':'#0F6E56','세라믹 필터':'#185FA5','보일러':'#5F5E5A','집진기 블로워 임펠러':'#7C3D8F','시크너 용수펌프':'#0E7490','조크러셔':'#854F0B'};
-const MAINT_LIGHTS={'밀':'#EAF3DE','탈수기':'#FBEAF0','드라이어':'#FAEEDA','쿨러':'#E1F5EE','세라믹 필터':'#E6F1FB','보일러':'#F1EFE8','집진기 블로워 임펠러':'#F3E8FF','시크너 용수펌프':'#E0F7FA','조크러셔':'#FFF3E0'};
-
-let MAINT_COL_HEADERS=['보수 항목','보수 날짜','소요일'];
-let currentMaintEquip=MAINT_EQUIPS[0];
-let currentMaintSub=null;
-let currentMaintUnit=null;
-let maintInputOpen=false;
-
-function buildMaintSidebar(){
-  const sidebar=document.getElementById('maintSidebar');
-  sidebar.innerHTML=
-    MAINT_EQUIPS.map(name=>{
-      const color=MAINT_COLORS[name]||'#185FA5';
-      const cnt=MAINT_RECORDS.filter(r=>r.equip===name).length;
-      return`<button class="maint-equip-btn${name===currentMaintEquip?' on':''}" onclick="selectMaintEquip(\`${name}\`)" oncontextmenu="openCtxMenu(event,'maint','${name}')" style="${name===currentMaintEquip?`background:${color};border-color:${color};color:#fff`:''}">
-        <span style="display:flex;justify-content:space-between;align-items:center">
-          <span>${name}</span>
-          <span style="font-size:10px;opacity:.7">${cnt}건</span>
-        </span>
-      </button>`;
-    }).join('')
-    + `<button class="btn-add-equip" style="margin-top:6px;width:100%;justify-content:center" onclick="openModal('modalMaint')">＋ 설비 추가</button>`;
-}
-
-function selectMaintEquip(name){
-  currentMaintEquip=name;
-  const records=MAINT_RECORDS.filter(r=>r.equip===name);
-  const subs=[...new Set(records.map(r=>r.sub).filter(Boolean))];
-  currentMaintSub=subs.length?subs[0]:null;
-  const units=[...new Set(records.filter(r=>!currentMaintSub||r.sub===currentMaintSub).map(r=>r.unit).filter(Boolean))];
-  currentMaintUnit=units.length?units[0]:null;
-  maintInputOpen=false;
-  buildMaintSidebar();
-  renderMaintContent();
-}
-
-function renderMaintContent(){
-  const color=MAINT_COLORS[currentMaintEquip]||'#185FA5';
-  const light=MAINT_LIGHTS[currentMaintEquip]||'#E6F1FB';
-  const records=MAINT_RECORDS.filter(r=>r.equip===currentMaintEquip);
-  const subs=[...new Set(records.map(r=>r.sub).filter(Boolean))];
-
-  let html=`<div class="maint-header" style="color:${color}">${currentMaintEquip}</div>
-  <div class="maint-sub-header">보수 이력 · 2024–2026 · 총 ${records.length}건</div>`;
-
-  if(subs.length>1){
-    if(!currentMaintSub) currentMaintSub=subs[0];
-    html+=`<div class="detail-tab-row">
-      ${subs.map(s=>`<div class="detail-tab${s===currentMaintSub?' on':''}" onclick="selectMaintSub('${s}')" style="${s===currentMaintSub?`background:${color};border-color:${color};color:#fff`:''}">
-        ${s}
-      </div>`).join('')}
-    </div>`;
-  }else if(subs.length===1&&!currentMaintSub){currentMaintSub=subs[0];}
-
-  const subRecords=currentMaintSub?records.filter(r=>r.sub===currentMaintSub):records;
-  const units=[...new Set(subRecords.map(r=>r.unit).filter(Boolean))];
-
-  if(units.length>1){
-    if(!currentMaintUnit||!units.includes(currentMaintUnit)) currentMaintUnit=units[0];
-    html+=`<div class="detail-tab-row">
-      ${units.map(u=>`<div class="detail-tab${u===currentMaintUnit?' on':''}" onclick="selectMaintUnit('${u}')" style="${u===currentMaintUnit?`background:${color+'33'};border-color:${color};color:${color}`:''}; font-size:11px">
-        ${u}
-      </div>`).join('')}
-    </div>`;
-  }else if(units.length===1){currentMaintUnit=units[0];}
-
-  const finalRecords=currentMaintUnit?subRecords.filter(r=>r.unit===currentMaintUnit):subRecords;
-
-  html+=`<div class="maint-add-row">
-    <button class="btn-maint-add" onclick="toggleMaintInput()">＋ 보수 이력 추가</button>
-  </div>
-  <div class="maint-input-area${maintInputOpen?' open':''}" id="maintInputArea">
-    <div class="maint-form-grid">
-      <div class="form-group"><div class="form-label">보수 항목</div><input class="form-input" id="mfItem" placeholder="예: 감속기 베어링 교체"></div>
-      <div class="form-group"><div class="form-label">보수 날짜</div><input class="form-input" id="mfDates" placeholder="예: 2026.06.22"></div>
-      <div class="form-group"><div class="form-label">소요일</div><input class="form-input" type="number" id="mfDays" min="1" placeholder="1"></div>
-      <button class="btn-add" onclick="addMaintRecord()" style="height:34px">추가</button>
-    </div>
-  </div>`;
-
-  if(finalRecords.length){
-    html+=`<table class="maint-table" id="maintTable">
-      <thead><tr>
-        <th ondblclick="editColHeader(this,0)" title="더블클릭하여 편집" style="cursor:pointer" id="mCol0">${MAINT_COL_HEADERS[0]}</th>
-        <th ondblclick="editColHeader(this,1)" title="더블클릭하여 편집" style="cursor:pointer" id="mCol1">${MAINT_COL_HEADERS[1]}</th>
-        <th ondblclick="editColHeader(this,2)" title="더블클릭하여 편집" style="cursor:pointer;width:70px;text-align:center" id="mCol2">${MAINT_COL_HEADERS[2]}</th>
-        <th style="width:90px;text-align:right">관리</th>
-      </tr></thead>
-      <tbody id="maintTbody">
-        ${finalRecords.map(r=>{
-          const realIdx=MAINT_RECORDS.indexOf(r);
-          return`<tr id="mrow_${realIdx}">
-            <td id="mcell_item_${realIdx}">${r.item}</td>
-            <td id="mcell_dates_${realIdx}"><div class="date-chips">${r.dates.split('/').map(d=>d.trim()).filter(d=>d.length>2).map(d=>`<span class="date-chip">${d}</span>`).join('')}</div></td>
-            <td id="mcell_days_${realIdx}" style="text-align:center"><span class="days-badge" style="background:${light};color:${color}">${r.days}일</span></td>
-            <td><div class="action-btns">
-              <button class="btn-maint-edit" onclick="startEdit(${realIdx})">수정</button>
-              <button class="btn-maint-del" onclick="deleteMaintRecord(${realIdx})">삭제</button>
-            </div></td>
-          </tr>`;
-        }).join('')}
-      </tbody>
-    </table>`;
-  }else{
-    html+=`<div class="empty-msg" style="padding:40px;text-align:center;background:#fff;border-radius:10px;border:1px solid #e2e8f0;color:#94a3b8">등록된 보수 이력이 없습니다</div>`;
-  }
-
-  const mc = document.getElementById('maintContent');
-  mc.innerHTML = html;
-
-  // 상단 KPI 및 차트 섹션 주입
-  const sec=document.createElement('div');
-  sec.className='maint-chart-section';
-  sec.innerHTML=`<div class="maint-kpi-row">
-    <div class="maint-kpi"><div class="maint-kpi-label">총 보수 건수</div><div class="maint-kpi-val" id="mKv1" style="color:${color}">-</div></div>
-    <div class="maint-kpi"><div class="maint-kpi-label" id="mKpiLabel2">총 ${MAINT_COL_HEADERS[2]}</div><div class="maint-kpi-val" id="mKv2" style="color:${color}">-</div></div>
-    <div class="maint-kpi"><div class="maint-kpi-label" id="mKpiLabel3">평균 ${MAINT_COL_HEADERS[2]}</div><div class="maint-kpi-val" id="mKv3" style="color:${color}">-</div></div>
-  </div>
-  <div class="maint-chart-title">보수 항목별 발생 건수 (상위 8개)</div>
-  <div style="position:relative;width:100%;height:180px"><canvas id="maintChartArea"></canvas></div>`;
-  mc.insertBefore(sec, mc.firstChild);
-  requestAnimationFrame(()=>renderMaintChart());
-}
-
-let maintChart=null;
-function renderMaintChart(){
-  const color=MAINT_COLORS[currentMaintEquip]||'#185FA5';
-  const records=MAINT_RECORDS.filter(r=>r.equip===currentMaintEquip);
-  const subRecs=currentMaintSub?records.filter(r=>r.sub===currentMaintSub):records;
-  const finalRecs=currentMaintUnit?subRecs.filter(r=>r.unit===currentMaintUnit):subRecs;
-  const totalCnt=finalRecs.length;
-  const totalDays=finalRecs.reduce((s,r)=>s+r.days,0);
-  const avgDays=totalCnt>0?(totalDays/totalCnt).toFixed(1):0;
-  
-  const kv1=document.getElementById('mKv1');
-  const kv2=document.getElementById('mKv2');
-  const kv3=document.getElementById('mKv3');
-  if(kv1)kv1.textContent=totalCnt+'건';
-  if(kv2)kv2.textContent=totalDays+'일';
-  if(kv3)kv3.textContent=avgDays+'일';
-  
-  const chartEl=document.getElementById('maintChartArea');
-  if(!chartEl)return;
-  
-  const itemMap={};
-  finalRecs.forEach(r=>{
-    const dateParts=r.dates.split(/[/,]/).map(d=>d.trim()).filter(d=>d.length>2);
-    itemMap[r.item]=(itemMap[r.item]||0)+dateParts.length;
-  });
-  const sorted=Object.entries(itemMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  const labels=sorted.map(d=>d[0].length>16?d[0].slice(0,15)+'...':d[0]);
-  const vals=sorted.map(d=>d[1]);
-  
-  if(maintChart){maintChart.destroy();maintChart=null;}
-  if(!sorted.length)return;
-  maintChart=new Chart(chartEl.getContext('2d'),{
-    type:'bar',
-    data:{labels,datasets:[{data:vals,backgroundColor:sorted.map((_,i)=>{
-      const alpha=Math.max(0.4,1-i*0.07);
-      return color+(Math.round(alpha*255).toString(16).padStart(2,'0'));
-    }),borderRadius:4,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{backgroundColor:'#1e293b',titleColor:'#e2e8f0',bodyColor:'#94a3b8',callbacks:{label:c=>c.parsed.y+'건'}}},
-      scales:{x:{grid:{display:false},ticks:{color:'#64748b',font:{size:10},maxRotation:30}},
-              y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#64748b',font:{size:10},stepSize:1}}}}
-  });
-}
-
-function startEdit(idx){
-  const r=MAINT_RECORDS[idx];
-  const row=document.getElementById(`mrow_${idx}`);
-  if(!row)return;
-  row.classList.add('editing-row');
-  document.getElementById(`mcell_item_${idx}`).innerHTML=
-    `<input class="edit-input" id="edit_item_${idx}" value="${r.item.replace(/"/g,'&quot;')}">`;
-  document.getElementById(`mcell_dates_${idx}`).innerHTML=
-    `<input class="edit-input" id="edit_dates_${idx}" value="${r.dates.replace(/"/g,'&quot;')}">`;
-  document.getElementById(`mcell_days_${idx}`).innerHTML=
-    `<input class="edit-input" type="number" id="edit_days_${idx}" value="${r.days}" min="1" style="width:54px;text-align:center" title="${MAINT_COL_HEADERS[2]}">`;
-  row.cells[3].innerHTML=`<div class="action-btns">
-    <button class="btn-maint-ok" onclick="saveEdit(${idx})">✓ 저장</button>
-    <button class="btn-maint-cancel" onclick="cancelEdit(${idx})">✕ 취소</button>
-  </div>`;
-}
-
-function saveEdit(idx){
-  const item=document.getElementById(`edit_item_${idx}`)?.value.trim();
-  const dates=document.getElementById(`edit_dates_${idx}`)?.value.trim();
-  const days=parseInt(document.getElementById(`edit_days_${idx}`)?.value)||1;
-  if(!item||!dates){alert('보수 항목과 날짜를 입력해 주세요.');return;}
-  MAINT_RECORDS[idx].item=item;
-  MAINT_RECORDS[idx].dates=dates;
-  MAINT_RECORDS[idx].days=days;
-  buildMaintSidebar();
-  renderMaintContent();
-  autoSave();
-  syncAllTabs();
-}
-
-function cancelEdit(idx){ renderMaintContent(); }
-function selectMaintSub(sub){ currentMaintSub=sub; currentMaintUnit=null; maintInputOpen=false; renderMaintContent(); }
-function selectMaintUnit(unit){ currentMaintUnit=unit; maintInputOpen=false; renderMaintContent(); }
-function toggleMaintInput(){ maintInputOpen=!maintInputOpen; renderMaintContent(); }
-
-function addMaintRecord(){
-  const item=document.getElementById('mfItem').value.trim();
-  const dates=document.getElementById('mfDates').value.trim();
-  const days=parseInt(document.getElementById('mfDays').value)||1;
-  if(!item||!dates){alert('보수 항목과 날짜를 입력해 주세요.');return;}
-  const sub=currentMaintSub||'';
-  const unit=currentMaintUnit||'';
-  MAINT_RECORDS.push({equip:currentMaintEquip,sub,unit,item,dates,days});
-  maintInputOpen=false;
-  buildMaintSidebar();
-  renderMaintContent();
-  autoSave();
-  syncAllTabs();
-}
-
-function deleteMaintRecord(idx){
-  if(!confirm('이 보수 이력을 삭제하시겠습니까?'))return;
-  MAINT_RECORDS.splice(idx,1);
-  buildMaintSidebar();
-  renderMaintContent();
-  autoSave();
-  syncAllTabs();
-}
-
-// ══ 메인 탭 전환 ══
-function switchMainTab(page,btn){
-  document.querySelectorAll('.header-tab').forEach(b=>{b.classList.remove('on');});
-  document.querySelectorAll(`.header-tab[data-page="${page}"]`).forEach(b=>b.classList.add('on'));
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('on'));
-  const sn=document.getElementById('snav-'+page);
-  if(sn) sn.classList.add('on');
-  
-  document.querySelectorAll('.page').forEach(p=>{p.style.display='none';});
-  currentPage=page;
-  if(page==='bdong'){
-    document.getElementById('pageBdong').style.display='';
-    renderView(currentView);
-  }else if(page==='maint'){
-    document.getElementById('pageMaint').style.display='';
-    buildMaintSidebar();renderMaintContent();
-  }else if(page==='analysis'){
-    document.getElementById('pageAnalysis').style.display='';
-    renderAnalysis();
-  }
-  updateInsightPanel(page);
-}
-
-function syncAllTabs(){
-  refreshAllYearTabs();
-  updateYearLabels();
-  if(currentPage==='analysis') renderAnalysis();
-  if(currentPage==='bdong') renderView(currentView);
-}
-
-function refreshAllYearTabs(){
-  buildYearTabs('timelineTabs', currentTimelineYear, 'switchTimelineTab');
-  buildYearTabs('hbarTabs', currentHBarYear, 'switchHBarTab');
-  updateYearLabels();
-}
-
-function getYearRange(){
-  const years = getAllYears();
-  if(!years.length) return '2024–2026';
-  const min = years[0];
-  const max = years[years.length-1];
-  return min===max ? min : `${min}–${max}`;
-}
-
-function updateYearLabels(){
-  const range = getYearRange();
-  const el1 = document.getElementById('labelBdong');
-  const el2 = document.getElementById('labelMaint');
-  const el3 = document.getElementById('labelAnalysis');
-  const el4 = document.getElementById('titleBdong');
-  const el5 = document.getElementById('footerYear');
-  if(el1) el1.textContent = `${range} ANNUAL MAINTENANCE REPORT`;
-  if(el2) el2.textContent = `${range} MAINTENANCE HISTORY`;
-  if(el3) el3.textContent = `COMPREHENSIVE ANALYSIS · ${range}`;
-  if(el4) el4.textContent = '선광 설비 부동 관리';
-  if(el5) el5.textContent = `선광 설비 관리 통합 시스템 · ${range}`;
-}
-
-function updateInsightPanel(page){
-  const panel = document.getElementById('insightContent');
-  if(!panel) return;
-  const agg = aggregate();
-  const totalH = +RECORDS.reduce((s,r)=>s+r.hour,0).toFixed(1);
-  const totalCnt = RECORDS.length;
-
-  const worst = getEquipNames().map(n=>({n, h:agg[n]?.total||0})).sort((a,b)=>b.h-a.h)[0];
-  const TODAY_ABS = parseAbsDay(getTodayDateStr());
-  let overdue = 0;
-  MAINT_RECORDS.forEach(mr=>{
-    const days=getMaintAbsDays(mr.dates).sort((a,b)=>a-b);
-    if(days.length<2) return;
-    const gaps=[];for(let i=1;i<days.length;i++)gaps.push(days[i]-days[i-1]);
-    const avg=Math.round(gaps.reduce((s,g)=>s+g,0)/gaps.length);
-    const elapsed=TODAY_ABS-Math.max(...days);
-    if(elapsed>avg) overdue++;
-  });
-
-  panel.innerHTML = `
-    ${worst?`<div class="insight-tip">
-      <div class="insight-tip-title">⚠️ 주의 설비</div>
-      <div class="insight-tip-text">${worst.n}의 부동시간이 ${worst.h.toFixed(1)}h로<br>가장 높습니다.<br>예방 정비 및 주요 부품 점검을 권장합니다.</div>
-    </div>`:''}
-    ${overdue>0?`<div class="insight-tip" style="background:#FFF7ED;border-color:#FED7AA">
-      <div class="insight-tip-title" style="color:#C2410C">🔔 정비 주기 초과</div>
-      <div class="insight-tip-text" style="color:#9A3412">${overdue}개 항목이 평균 보수주기를 초과했습니다. 종합 분석 탭에서 확인하세요.</div>
-    </div>`:''}
-    <div class="insight-card">
-      <div class="insight-card-title">🕐 총 부동시간</div>
-      <div class="insight-card-val" style="color:#185FA5">${totalH}h</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-card-title">📋 총 발생건수</div>
-      <div class="insight-card-val" style="color:#0F6E56">${totalCnt}건</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-card-title">🔧 총 보수 항목</div>
-      <div class="insight-card-val" style="color:#BA7517">${MAINT_RECORDS.length}건</div>
-    </div>
-  `;
-}
-
-function updateSyncStatus(status){
-  const el=document.getElementById('syncStatus');
-  if(!el)return;
-  const dot=el.querySelector('.sync-dot');
-  const span=el.querySelector('span');
-  if(status==='online'||status==='saved'){
-    if(dot){dot.style.background='#0F6E56';}
-    if(span) span.textContent= status==='saved'?'저장 완료':'클라우드 연결됨';
-  }else{
-    if(dot){dot.style.background='#A32D2D';}
-    if(span) span.textContent='오프라인';
-  }
-}
-
+// ══ 차트 및 날짜 분석 헬퍼 ══
 function getAllYears(){
   const ySet = new Set();
   RECORDS.forEach(r=>{
@@ -1344,12 +1370,146 @@ function buildYearTabs(containerId, currentYr, onClickFn){
     + years.map(y=>`<button class="detail-tab ${currentYr===y?'on':''}" data-yr="${y}" onclick="${onClickFn}(this)" style="${currentYr===y?'background:#1C2B4A;border-color:#1C2B4A;color:#fff':''}">${y}년</button>`).join('');
 }
 
-// ══════════════════════════════════════════════
-// ③ 종합 분석 로직
-// ══════════════════════════════════════════════
-let bubbleChart=null, timelineChart=null;
 let currentTimelineYear='all';
+let timelineChart=null;
+
+function buildTimeline(yr){
+  const MONTHS=['01','02','03','04','05','06','07','08','09','10','11','12'];
+  const MLABELS=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+
+  function matchYear(dateStr, yr){
+    if(yr==='all') return true;
+    const y2=yr.slice(2);
+    if(dateStr.startsWith(y2+'/')) return true;
+    if(dateStr.startsWith(yr+'.') || dateStr.startsWith(yr+'-') || dateStr.startsWith(yr+'/')) return true;
+    return false;
+  }
+
+  const bdByMonth=MONTHS.map(m=>+RECORDS.filter(r=>{
+    const mm=r.date.split('/');
+    if(mm[1]!==m) return false;
+    return matchYear(r.date, yr);
+  }).reduce((s,r)=>s+r.hour,0).toFixed(1));
+
+  const mByMonth=MONTHS.map(m=>{
+    let cnt=0;
+    MAINT_RECORDS.forEach(r=>{
+      getMaintDateList(r.dates).forEach(d=>{
+        if(String(d.mo).padStart(2,'0')!==m) return;
+        if(yr==='all'||d.y===parseInt(yr)) cnt++;
+      });
+    });
+    return cnt;
+  });
+
+  if(timelineChart){timelineChart.destroy();timelineChart=null;}
+  const tCtx=document.getElementById('cTimeline')?.getContext('2d');
+  if(!tCtx) return;
+  const label=yr==='all'?'종합':yr+'년';
+  timelineChart=new Chart(tCtx,{
+    data:{labels:MLABELS,datasets:[
+      {type:'bar',label:`부동시간(h) - ${label}`,data:bdByMonth,
+        backgroundColor:'#185FA599',borderRadius:3,yAxisID:'y'},
+      {type:'line',label:`보수건수 - ${label}`,data:mByMonth,
+        borderColor:'#BA7517',borderWidth:2.5,pointBackgroundColor:'#BA7517',
+        pointRadius:4,tension:0.3,fill:false,yAxisID:'y2'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:true,position:'bottom',labels:{boxWidth:10,font:{size:10}}},
+        tooltip:{mode:'index',intersect:false}
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:10}}},
+        y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},callback:v=>v+'h'},
+           title:{display:true,text:'부동시간(h)',font:{size:9}}},
+        y2:{position:'right',grid:{display:false},ticks:{font:{size:10},stepSize:1},
+            title:{display:true,text:'보수건수',font:{size:9}}}
+      }}
+  });
+}
+
+function switchTimelineTab(btn){
+  document.querySelectorAll('#timelineTabs .detail-tab').forEach(b=>{
+    b.classList.remove('on');
+    b.style.background='#fff';b.style.borderColor='#e2e8f0';b.style.color='#64748b';
+  });
+  btn.classList.add('on');
+  btn.style.background='#1C2B4A';btn.style.borderColor='#1C2B4A';btn.style.color='#fff';
+  currentTimelineYear=btn.dataset.yr;
+  buildTimeline(btn.dataset.yr);
+}
+
+let bubbleChart=null;
 let currentHBarYear='all';
+
+function buildHBar(yr){
+  const EQUIPS = getEquipNames();
+
+  function matchYearRecord(dateStr, yr){
+    if(yr==='all') return true;
+    const y2=yr.slice(2);
+    if(dateStr.startsWith(y2+'/')) return true;
+    if(dateStr.startsWith(yr+'.') || dateStr.startsWith(yr+'-') || dateStr.startsWith(yr+'/')) return true;
+    return false;
+  }
+
+  const stats = EQUIPS.map(name=>{
+    const color = EQUIP_META[name]?.color||'#888';
+    const bdRecs = RECORDS.filter(r=>r.equip===name && matchYearRecord(r.date, yr));
+    const bdH = +bdRecs.reduce((s,r)=>s+r.hour,0).toFixed(1);
+    const mRecs = MAINT_RECORDS.filter(r=>r.equip===name);
+    let mCnt = 0;
+    mRecs.forEach(r=>{
+      r.dates.split('/').map(d=>d.trim()).filter(d=>d.length>2).forEach(d=>{
+        if(yr==='all') mCnt++;
+        else {
+          const m1=d.match(/^(\d{2})\./);
+          const m2=d.match(/(\d{4})[.\-]/);
+          if(m2 && m2[1]===yr) mCnt++;
+          else if(m1 && '20'+m1[1]===yr) mCnt++;
+        }
+      });
+    });
+    return {name,color,bdH,mCnt};
+  }).filter(s=>s.bdH>0||s.mCnt>0).sort((a,b)=>b.bdH-a.bdH);
+
+  if(bubbleChart){bubbleChart.destroy();bubbleChart=null;}
+  const bCtx=document.getElementById('cHBar')?.getContext('2d');
+  if(!bCtx||!stats.length) return;
+  const label=yr==='all'?'전체':yr+'년';
+  bubbleChart=new Chart(bCtx,{
+    data:{
+      labels:stats.map(s=>s.name),
+      datasets:[
+        {type:'bar',label:`부동시간(h) - ${label}`,data:stats.map(s=>s.bdH),
+          backgroundColor:stats.map(s=>s.color+'BB'),borderRadius:4,borderSkipped:false,yAxisID:'y'},
+        {type:'line',label:`보수횟수(회) - ${label}`,data:stats.map(s=>s.mCnt),
+          borderColor:'#BA7517',borderWidth:2.5,pointBackgroundColor:stats.map(s=>s.color),
+          pointRadius:5,tension:0.3,fill:false,yAxisID:'y2'}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'bottom',labels:{boxWidth:10,font:{size:10}}},
+        tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.datasetIndex===0?`부동시간: ${c.parsed.y}h`:`보수횟수: ${c.parsed.y}회`}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:11},color:'#334155'}},
+        y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},callback:v=>v+'h'},title:{display:true,text:'부동시간(h)',font:{size:9}}},
+        y2:{position:'right',grid:{display:false},ticks:{font:{size:10},stepSize:1},title:{display:true,text:'보수횟수(회)',font:{size:9}}}
+      }}
+  });
+}
+
+function switchHBarTab(btn){
+  document.querySelectorAll('#hbarTabs .detail-tab').forEach(b=>{
+    b.classList.remove('on');
+    b.style.background='#fff';b.style.borderColor='#e2e8f0';b.style.color='#64748b';
+  });
+  btn.classList.add('on');
+  btn.style.background='#1C2B4A';btn.style.borderColor='#1C2B4A';btn.style.color='#fff';
+  currentHBarYear=btn.dataset.yr;
+  buildHBar(btn.dataset.yr);
+}
 
 function parseYM(dateStr){
   dateStr = dateStr.trim();
@@ -1391,143 +1551,6 @@ function getMaintDateList(datesStr){
 function getMaintAbsDays(datesStr){
   const parts = datesStr.split('/').map(d=>d.trim()).filter(d=>d.length>2);
   return parts.map(p=>parseAbsDay(p)).filter(v=>v!==null);
-}
-
-function buildTimeline(yr){
-  const MONTHS=['01','02','03','04','05','06','07','08','09','10','11','12'];
-  const MLABELS=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-
-  function matchYear(dateStr, yr){
-    if(yr==='all') return true;
-    const y2=yr.slice(2);
-    if(dateStr.startsWith(y2+'/')) return true;
-    if(dateStr.startsWith(yr+'.') || dateStr.startsWith(yr+'-') || dateStr.startsWith(yr+'/')) return true;
-    return false;
-  }
-
-  const bdByMonth=MONTHS.map(m=>+RECORDS.filter(r=>{
-    const mm=r.date.split('/');
-    if(mm[1]!==m) return false;
-    return matchYear(r.date, yr);
-  }).reduce((s,r)=>s+r.hour,0).toFixed(1));
-
-  const mByMonth=MONTHS.map(m=>{
-    let cnt=0;
-    MAINT_RECORDS.forEach(r=>{
-      getMaintDateList(r.dates).forEach(d=>{
-        if(String(d.mo).padStart(2,'0')!==m) return;
-        if(yr==='all'||d.y===parseInt(yr)) cnt++;
-      });
-    });
-    return cnt;
-  });
-
-  if(timelineChart){timelineChart.destroy();timelineChart=null;}
-  const tCtx=document.getElementById('cTimeline')?.getContext('2d');
-  if(!tCtx) return;
-  const label=yr==='all'?'24-26 종합':yr+'년';
-  timelineChart=new Chart(tCtx,{
-    type:'bar',
-    data:{labels:MLABELS,datasets:[
-      {type:'bar',label:`부동시간(h) - ${label}`,data:bdByMonth,
-        backgroundColor:'#185FA599',borderRadius:3,yAxisID:'y'},
-      {type:'line',label:`보수건수 - ${label}`,data:mByMonth,
-        borderColor:'#BA7517',borderWidth:2.5,pointBackgroundColor:'#BA7517',
-        pointRadius:4,tension:0.3,fill:false,yAxisID:'y2'}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{
-        legend:{display:true,position:'bottom',labels:{boxWidth:10,font:{size:10}}},
-        tooltip:{mode:'index',intersect:false}
-      },
-      scales:{
-        x:{grid:{display:false},ticks:{font:{size:10}}},
-        y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},callback:v=>v+'h'},
-           title:{display:true,text:'부동시간(h)',font:{size:9}}},
-        y2:{position:'right',grid:{display:false},ticks:{font:{size:10},stepSize:1},
-            title:{display:true,text:'보수건수',font:{size:9}}}
-      }}
-  });
-}
-
-function switchTimelineTab(btn){
-  document.querySelectorAll('#timelineTabs .detail-tab').forEach(b=>{
-    b.classList.remove('on');
-    b.style.background='#fff';b.style.borderColor='#e2e8f0';b.style.color='#64748b';
-  });
-  btn.classList.add('on');
-  btn.style.background='#1C2B4A';btn.style.borderColor='#1C2B4A';btn.style.color='#fff';
-  currentTimelineYear=btn.dataset.yr;
-  buildTimeline(btn.dataset.yr);
-}
-
-function buildHBar(yr){
-  const EQUIPS = getEquipNames();
-
-  function matchYearRecord(dateStr, yr){
-    if(yr==='all') return true;
-    const y2=yr.slice(2);
-    if(dateStr.startsWith(y2+'/')) return true;
-    if(dateStr.startsWith(yr+'.') || dateStr.startsWith(yr+'-') || dateStr.startsWith(yr+'/')) return true;
-    return false;
-  }
-
-  const stats = EQUIPS.map(name=>{
-    const color = EQUIP_META[name]?.color||'#888';
-    const bdRecs = RECORDS.filter(r=>r.equip===name && matchYearRecord(r.date, yr));
-    const bdH = +bdRecs.reduce((s,r)=>s+r.hour,0).toFixed(1);
-    const mRecs = MAINT_RECORDS.filter(r=>r.equip===name);
-    let mCnt = 0;
-    mRecs.forEach(r=>{
-      r.dates.split('/').map(d=>d.trim()).filter(d=>d.length>2).forEach(d=>{
-        if(yr==='all') mCnt++;
-        else {
-          const m1=d.match(/^(\d{2})\./);
-          const m2=d.match(/(\d{4})[.\-]/);
-          if(m2 && m2[1]===yr) mCnt++;
-          else if(m1 && '20'+m1[1]===yr) mCnt++;
-        }
-      });
-    });
-    return {name,color,bdH,mCnt};
-  }).filter(s=>s.bdH>0||s.mCnt>0).sort((a,b)=>b.bdH-a.bdH);
-
-  if(bubbleChart){bubbleChart.destroy();bubbleChart=null;}
-  const bCtx=document.getElementById('cHBar')?.getContext('2d');
-  if(!bCtx||!stats.length) return;
-  const label=yr==='all'?'전체':yr+'년';
-  bubbleChart=new Chart(bCtx,{
-    type:'bar',
-    data:{
-      labels:stats.map(s=>s.name),
-      datasets:[
-        {type:'bar',label:`부동시간(h) - ${label}`,data:stats.map(s=>s.bdH),
-          backgroundColor:stats.map(s=>s.color+'BB'),borderRadius:4,borderSkipped:false,yAxisID:'y'},
-        {type:'line',label:`보수횟수(회) - ${label}`,data:stats.map(s=>s.mCnt),
-          borderColor:'#BA7517',borderWidth:2.5,pointBackgroundColor:stats.map(s=>s.color),
-          pointRadius:5,tension:0.3,fill:false,yAxisID:'y2'}
-      ]
-    },
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:true,position:'bottom',labels:{boxWidth:10,font:{size:10}}},
-        tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.datasetIndex===0?`부동시간: ${c.parsed.y}h`:`보수횟수: ${c.parsed.y}회`}}},
-      scales:{
-        x:{grid:{display:false},ticks:{font:{size:11},color:'#334155'}},
-        y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},callback:v=>v+'h'},title:{display:true,text:'부동시간(h)',font:{size:9}}},
-        y2:{position:'right',grid:{display:false},ticks:{font:{size:10},stepSize:1},title:{display:true,text:'보수횟수(회)',font:{size:9}}}
-      }}
-  });
-}
-
-function switchHBarTab(btn){
-  document.querySelectorAll('#hbarTabs .detail-tab').forEach(b=>{
-    b.classList.remove('on');
-    b.style.background='#fff';b.style.borderColor='#e2e8f0';b.style.color='#64748b';
-  });
-  btn.classList.add('on');
-  btn.style.background='#1C2B4A';btn.style.borderColor='#1C2B4A';btn.style.color='#fff';
-  currentHBarYear=btn.dataset.yr;
-  buildHBar(btn.dataset.yr);
 }
 
 function renderAnalysis(){
@@ -1580,19 +1603,19 @@ function renderAnalysis(){
   }).join('');
 
   currentHBarYear='all';
+  buildYearTabs('hbarTabs','all','switchHBarTab');
   buildHBar('all');
 
   currentTimelineYear='all';
+  buildYearTabs('timelineTabs','all','switchTimelineTab');
   buildTimeline('all');
 
   buildEffectData();
   renderEffectTable(currentEffectMode);
 }
 
-// ══ 보수 효과 분석 ══
 let _effectRows = [];
 let currentEffectMode = 'ratio';
-let currentEffectEquip = null;
 
 function buildEffectData(){
   const TODAY_ABS = parseAbsDay(getTodayDateStr());
@@ -1649,7 +1672,7 @@ function renderEffectTable(mode){
   if(!container) return;
 
   if(!_effectRows.length){
-    container.innerHTML = '<div class="empty-msg" style="padding:32px;text-align:center;color:#94a3b8">분석할 데이터가 부족합니다</div>';
+    container.innerHTML = '<div class="empty-msg" style="padding:32px">분석할 데이터가 부족합니다</div>';
     return;
   }
 
@@ -1729,7 +1752,7 @@ function renderEffectTable(mode){
     </div>`;
 
     if(!currentEffectEquip){
-      container.innerHTML = chipsHtml + '<div class="empty-msg" style="padding:24px;text-align:center;color:#94a3b8">설비를 선택해주세요</div>';
+      container.innerHTML = chipsHtml + '<div class="empty-msg" style="padding:24px">설비를 선택해주세요</div>';
       return;
     }
 
@@ -1765,6 +1788,7 @@ function renderEffectTable(mode){
   }
 }
 
+let currentEffectEquip = null;
 function selectEffectEquip(name){
   currentEffectEquip = name;
   renderEffectTable('byEquip');
@@ -1778,10 +1802,10 @@ function openAnalysisDetail(name){
   const light = EQUIP_META[name]?.light||'#E6F1FB';
 
   const agg = aggregate();
-  const s = agg[name] || {total:0, cnt:0, catArr:[]};
+  const s = agg[name];
   const mRecs = MAINT_RECORDS.filter(r=>r.equip===name);
-  const mCnt = mRecs.reduce((sum,r)=>sum+getMaintDateList(r.dates).length,0);
-  const mDays = mRecs.reduce((sum,r)=>sum+r.days,0);
+  const mCnt = mRecs.reduce((s,r)=>s+getMaintDateList(r.dates).length,0);
+  const mDays = mRecs.reduce((s,r)=>s+r.days,0);
 
   document.getElementById('detailModalTitle').innerHTML =
     `<span style="color:${color}">${name}</span> 상세 분석`;
@@ -1850,13 +1874,15 @@ function openAnalysisDetail(name){
     document.getElementById('detailMtTable').innerHTML = mRecs.length
       ? `<table style="width:100%;border-collapse:collapse;font-size:11px">
           <thead><tr style="background:#f1f5f9">
-            <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #e2e8f0;color:#475569;font-weight:600">보수 항목</th>
+            <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #e2e8f0;color:#475569;font-weight:600">보수항목</th>
             <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #e2e8f0;color:#475569;font-weight:600">날짜</th>
+            <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #e2e8f0;color:#475569;font-weight:600">상세작업내역</th>
             <th style="padding:6px 10px;text-align:center;border-bottom:1px solid #e2e8f0;color:#475569;font-weight:600">소요일</th>
           </tr></thead>
           <tbody>${mRecs.map(r=>`<tr style="border-bottom:0.5px solid #f1f5f9">
             <td style="padding:6px 10px;color:#334155;font-weight:500">${r.item}</td>
             <td style="padding:6px 10px"><div style="display:flex;flex-wrap:wrap;gap:3px">${r.dates.split('/').map(d=>d.trim()).filter(d=>d.length>2).map(d=>`<span style="font-size:10px;background:#f1f5f9;border-radius:4px;padding:1px 6px;color:#475569">${d}</span>`).join('')}</div></td>
+            <td style="padding:6px 10px;color:#64748b">${r.detail||'-'}</td>
             <td style="padding:6px 10px;text-align:center"><span style="font-size:10px;font-weight:700;background:${light};color:${color};border-radius:6px;padding:2px 7px">${r.days}일</span></td>
           </tr>`).join('')}</tbody>
         </table>`
@@ -1866,7 +1892,6 @@ function openAnalysisDetail(name){
   openModal('modalDetail');
 }
 
-// ══ 설비 관리 모달 및 유틸 ══
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 
@@ -1908,28 +1933,70 @@ function addMaintEquip(){
   syncAllTabs();
 }
 
-function editColHeader(th, idx){
-  const current = MAINT_COL_HEADERS[idx];
-  const input = document.createElement('input');
-  input.value = current;
-  input.style.cssText='width:100%;padding:2px 6px;border:1.5px solid #185FA5;border-radius:4px;font-size:12px;font-weight:600;color:#1a1a2e;background:#fff;outline:none';
-  th.innerHTML='';
-  th.appendChild(input);
-  input.focus();
-  input.select();
-  function save(){
-    const val=input.value.trim()||current;
-    MAINT_COL_HEADERS[idx]=val;
-    renderMaintContent();
-  }
-  input.addEventListener('blur',save);
-  input.addEventListener('keydown',e=>{
-    if(e.key==='Enter'){input.blur();}
-    if(e.key==='Escape'){MAINT_COL_HEADERS[idx]=current;renderMaintContent();}
+let maintChart=null;
+
+function renderMaintChart(){
+  const color=MAINT_COLORS[currentMaintEquip]||'#185FA5';
+  const records=MAINT_RECORDS.filter(r=>r.equip===currentMaintEquip);
+  const subRecs=currentMaintSub?records.filter(r=>r.sub===currentMaintSub):records;
+  const finalRecs=currentMaintUnit?subRecs.filter(r=>r.unit===currentMaintUnit):subRecs;
+  const totalCnt=finalRecs.length;
+  const totalDays=finalRecs.reduce((s,r)=>s+r.days,0);
+  const avgDays=totalCnt>0?(totalDays/totalCnt).toFixed(1):0;
+  const kv1=document.getElementById('mKv1');
+  const kv2=document.getElementById('mKv2');
+  const kv3=document.getElementById('mKv3');
+  if(kv1)kv1.textContent=totalCnt+'건';
+  if(kv2)kv2.textContent=totalDays+'일';
+  if(kv3)kv3.textContent=avgDays+'일';
+  const chartEl=document.getElementById('maintChartArea');
+  if(!chartEl)return;
+
+  const itemMap={};
+  finalRecs.forEach(r=>{
+    const dateParts=r.dates.split(/[/,]/).map(d=>d.trim()).filter(d=>d.length>2);
+    itemMap[r.item]=(itemMap[r.item]||0)+dateParts.length;
+  });
+  const sorted=Object.entries(itemMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const labels=sorted.map(d=>d[0].length>16?d[0].slice(0,15)+'...':d[0]);
+  const vals=sorted.map(d=>d[1]);
+  if(maintChart){maintChart.destroy();maintChart=null;}
+  if(!sorted.length)return;
+  maintChart=new Chart(chartEl.getContext('2d'),{
+    data:{labels,datasets:[{type:'bar',data:vals,backgroundColor:sorted.map((_,i)=>{
+      const alpha=Math.max(0.4,1-i*0.07);
+      return color+(Math.round(alpha*255).toString(16).padStart(2,'0'));
+    }),borderRadius:4,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#1e293b',titleColor:'#e2e8f0',bodyColor:'#94a3b8',callbacks:{label:c=>c.parsed.y+'건'}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#64748b',font:{size:10},maxRotation:30}},
+              y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#64748b',font:{size:10},stepSize:1}}}}
   });
 }
 
-// ══ 우클릭 컨텍스트 메뉴 ══
+const _origRMC=renderMaintContent;
+renderMaintContent=function(){
+  _origRMC();
+  const mc=document.getElementById('maintContent');
+  if(!mc)return;
+  const color=MAINT_COLORS[currentMaintEquip]||'#185FA5';
+  const sec=document.createElement('div');
+  sec.className='maint-chart-section';
+  sec.innerHTML=`<div class="maint-kpi-row">
+    <div class="maint-kpi"><div class="maint-kpi-label">총 보수 건수</div><div class="maint-kpi-val" id="mKv1" style="color:${color}">-</div></div>
+    <div class="maint-kpi"><div class="maint-kpi-label">총 소요일</div><div class="maint-kpi-val" id="mKv2" style="color:${color}">-</div></div>
+    <div class="maint-kpi"><div class="maint-kpi-label">평균 소요일</div><div class="maint-kpi-val" id="mKv3" style="color:${color}">-</div></div>
+  </div>
+  <div class="maint-chart-title">보수 항목별 발생 건수 (상위 8개)</div>
+  <div style="position:relative;width:100%;height:180px"><canvas id="maintChartArea"></canvas></div>`;
+  mc.insertBefore(sec,mc.firstChild);
+  requestAnimationFrame(()=>renderMaintChart());
+};
+
+window.addEventListener('click',e=>{
+  document.querySelectorAll('.modal-overlay').forEach(el=>{if(e.target===el)el.classList.remove('open');});
+});
+
 let ctxType=null, ctxTarget=null;
 const PROTECTED_BDONG=['설비별 최대 원인','전체 설비'];
 
@@ -1964,6 +2031,7 @@ function ctxDelete(){
     buildSubTabs();
     renderView(currentView);
     syncAllTabs();
+
   }else if(ctxType==='maint'){
     const idx=MAINT_EQUIPS.indexOf(ctxTarget);
     if(idx>=0) MAINT_EQUIPS.splice(idx,1);
@@ -1976,14 +2044,13 @@ function ctxDelete(){
     }
     buildMaintSidebar();
     if(currentMaintEquip) renderMaintContent();
-    else document.getElementById('maintContent').innerHTML='<div class="empty-msg" style="padding:60px;text-align:center;color:#94a3b8">등록된 설비가 없습니다</div>';
+    else document.getElementById('maintContent').innerHTML='<div class="empty-msg" style="padding:60px">등록된 설비가 없습니다</div>';
     syncAllTabs();
   }
   ctxType=null; ctxTarget=null;
 }
 
-window.addEventListener('click',e=>{
-  document.querySelectorAll('.modal-overlay').forEach(el=>{if(e.target===el)el.classList.remove('open');});
+document.addEventListener('click',()=>{
   document.getElementById('ctxMenu')?.classList.remove('open');
 });
 document.addEventListener('keydown',e=>{
@@ -1997,5 +2064,28 @@ renderView('설비별 최대 원인');
 updateYearLabels();
 updateInsightPanel('bdong');
 </script>
+
+<div class="modal-overlay" id="modalDetail" style="align-items:flex-start;padding:40px 20px;overflow-y:auto">
+  <div class="modal-box" style="width:720px;max-width:95vw;max-height:85vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div id="detailModalTitle" style="font-size:16px;font-weight:700;color:#1a1a2e"></div>
+      <button onclick="closeModal('modalDetail')" style="background:none;border:none;font-size:18px;cursor:pointer;color:#64748b;padding:4px 8px">✕</button>
+    </div>
+    <div id="detailModalKpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px"></div>
+    <div style="background:#f8f9fc;border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:10px">부동 원인별 시간 (h)</div>
+      <div style="position:relative;height:180px"><canvas id="detailBdChart"></canvas></div>
+    </div>
+    <div style="background:#f8f9fc;border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:10px">보수 항목별 횟수</div>
+      <div style="position:relative;height:160px"><canvas id="detailMtChart"></canvas></div>
+    </div>
+    <div style="background:#f8f9fc;border-radius:10px;padding:14px">
+      <div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:10px">보수 이력 목록</div>
+      <div id="detailMtTable" style="max-height:200px;overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
