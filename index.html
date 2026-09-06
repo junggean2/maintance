@@ -1650,27 +1650,54 @@ let currentEffectMode = 'ratio';
 function buildEffectData(){
   const TODAY_ABS = parseAbsDay(getTodayDateStr());
   _effectRows = [];
-  MAINT_RECORDS.forEach(mr=>{
-    const absDays = getMaintAbsDays(mr.dates).filter(v=>v!==null).sort((a,b)=>a-b);
-    if(!absDays.length) return;
-    const equip = mr.equip;
 
-    let avgCycle = null;
-    if(absDays.length>=2){
-      const gaps=[];
-      for(let i=1;i<absDays.length;i++) gaps.push(absDays[i]-absDays[i-1]);
-      avgCycle = Math.round(gaps.reduce((s,g)=>s+g,0)/gaps.length);
+  // 1. [설비명 + 보수항목] 기준으로 날짜 모으기 (동일 Part 자동 통합)
+  const partGroups = {};
+
+  MAINT_RECORDS.forEach(mr=>{
+    const equip = mr.equip;
+    const item = (mr.item || '').trim();
+    if(!equip || !item) return;
+
+    const groupKey = `${equip}___${item}`;
+    if(!partGroups[groupKey]){
+      partGroups[groupKey] = {
+        equip: equip,
+        item: item,
+        dates: []
+      };
     }
 
-    const lastMaintDay = Math.max(...absDays);
-    const elapsedDays = TODAY_ABS!==null ? (TODAY_ABS - lastMaintDay) : null;
-    const ratio = (avgCycle && elapsedDays!==null) ? elapsedDays/avgCycle : null;
+    const absDays = getMaintAbsDays(mr.dates || '');
+    partGroups[groupKey].dates.push(...absDays);
+  });
+
+  // 2. Part별 평균 주기 및 경과일 산출
+  Object.values(partGroups).forEach(group=>{
+    const uniqueDays = [...new Set(group.dates)].sort((a,b)=>a-b);
+    if(!uniqueDays.length) return;
+
+    let avgCycle = null;
+    if(uniqueDays.length >= 2){
+      const gaps = [];
+      for(let i = 1; i < uniqueDays.length; i++){
+        gaps.push(uniqueDays[i] - uniqueDays[i-1]);
+      }
+      avgCycle = Math.round(gaps.reduce((s, g) => s + g, 0) / gaps.length);
+    }
+
+    const lastMaintDay = Math.max(...uniqueDays);
+    const elapsedDays = TODAY_ABS !== null ? (TODAY_ABS - lastMaintDay) : null;
+    const ratio = (avgCycle && elapsedDays !== null) ? elapsedDays / avgCycle : null;
 
     _effectRows.push({
-      equip, item:mr.item,
-      avgCycle, elapsedDays, ratio,
-      color:EQUIP_META[equip]?.color||'#888',
-      light:EQUIP_META[equip]?.light||'#eee'
+      equip: group.equip,
+      item: group.item,
+      avgCycle,
+      elapsedDays,
+      ratio,
+      color: EQUIP_META[group.equip]?.color || '#888',
+      light: EQUIP_META[group.equip]?.light || '#eee'
     });
   });
 }
