@@ -832,7 +832,6 @@ const STORAGE_KEY='선광설비관리_v1';
 const DEFAULT_BD_EQUIPS=['드라이어','시크너','리클레이머','탈수기','밀','쿨러','보일러'];
 const DEFAULT_MT_EQUIPS=['밀','탈수기','드라이어','쿨러','세라믹 필터','보일러','집진기 블로워 임펠러','시크너 용수펌프','조크러셔'];
 
-// 설비별 서브분류 메타데이터 저장 객체
 let MAINT_SUB_CONFIG = {
   '밀': { sub1: ['50만 로드밀', '35만 로드밀'], sub2: ['1호 밀', '2-1호 밀'] },
   '탈수기': { sub1: ['35만', '50만'], sub2: ['1호', '2호'] },
@@ -942,7 +941,7 @@ function showToast(msg,type='save'){
 }
 
 // ══════════════════════════════════════════════
-// ② 보수 이력 데이터 & 로직 (순서: 보수항목, 일자, 상세내용, 소요일)
+// ② 보수 이력 데이터 & 로직
 // ══════════════════════════════════════════════
 let MAINT_RECORDS=[
   // 밀 — 50만 로드밀 1호
@@ -1108,7 +1107,6 @@ function renderMaintContent(){
   let html=`<div class="maint-header" style="color:${color}">${currentMaintEquip}</div>
   <div class="maint-sub-header">보수 이력 · 총 ${records.length}건</div>`;
 
-  // 상세분류 1 탭
   if(sub1List.length > 0){
     html+=`<div class="detail-tab-row">
       ${sub1List.map(s=>`<div class="detail-tab${s===currentMaintSub?' on':''}" onclick="selectMaintSub('${s}')" style="${s===currentMaintSub?`background:${color};border-color:${color};color:#fff;font-weight:700`:''}">
@@ -1117,7 +1115,6 @@ function renderMaintContent(){
     </div>`;
   }
 
-  // 상세분류 2 탭
   if(sub2List.length > 0){
     html+=`<div class="detail-tab-row">
       ${sub2List.map(u=>`<div class="detail-tab${u===currentMaintUnit?' on':''}" onclick="selectMaintUnit('${u}')" style="${u===currentMaintUnit?`background:${color}22;border-color:${color};color:${color};font-weight:700`:''}; font-size:11px">
@@ -1574,7 +1571,7 @@ function switchHBarTab(btn){
 }
 
 // ══════════════════════════════════════════════
-// ③ 종합 분석 로직 (Part 기준 평균 주기 그룹화)
+// ③ 종합 분석 로직
 // ══════════════════════════════════════════════
 let bubbleChart=null, timelineChart=null;
 
@@ -1688,7 +1685,6 @@ function buildEffectData(){
   const TODAY_ABS = parseAbsDay(getTodayDateStr());
   _effectRows = [];
 
-  // [설비명 + 보수항목] 기준으로 일자를 그룹화
   const partGroups = {};
 
   MAINT_RECORDS.forEach(mr=>{
@@ -1812,6 +1808,7 @@ function renderEffectTable(mode){
       </tr></thead><tbody>
       ${sorted.map(r=>{
         const cycleText = r.avgCycle!==null ? r.avgCycle+'일' : '—';
+        const elapsedText = r.elapsedDays!==null ? r.elapsedDays+'일' : '—';
         const s = getStatusBadge(r.avgCycle, r.elapsedDays);
         return `<tr style="border-bottom:0.5px solid #f1f5f9">
           <td style="padding:8px 12px"><span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:${r.light};color:${r.color}">${r.equip}</span></td>
@@ -2021,7 +2018,6 @@ function addMaintEquip(){
   const sub1Arr = sub1Input ? sub1Input.split(',').map(s => s.trim()).filter(Boolean) : [];
   const sub2Arr = sub2Input ? sub2Input.split(',').map(s => s.trim()).filter(Boolean) : [];
 
-  // 이미 있는 설비라면 목록에 중복 추가하지 않음
   if(!MAINT_EQUIPS.includes(name)){
     MAINT_EQUIPS.push(name);
   }
@@ -2029,13 +2025,11 @@ function addMaintEquip(){
   MAINT_COLORS[name] = color;
   MAINT_LIGHTS[name] = hexToLight(color);
 
-  // MAINT_SUB_CONFIG 객체 방어 처리
   if(!window.MAINT_SUB_CONFIG) window.MAINT_SUB_CONFIG = {};
   const existingCfg = MAINT_SUB_CONFIG[name] || {};
   const prevSub1 = Array.isArray(existingCfg.sub1) ? existingCfg.sub1 : [];
   const prevSub2 = Array.isArray(existingCfg.sub2) ? existingCfg.sub2 : [];
 
-  // 안전하게 병합
   const mergedSub1 = [...new Set([...prevSub1, ...sub1Arr])];
   const mergedSub2 = [...new Set([...prevSub2, ...sub2Arr])];
 
@@ -2052,35 +2046,6 @@ function addMaintEquip(){
   currentMaintEquip = name;
   currentMaintSub = mergedSub1.length ? mergedSub1[0] : null;
   currentMaintUnit = mergedSub2.length ? mergedSub2[0] : null;
-
-  buildMaintSidebar();
-  renderMaintContent();
-  autoSave();
-  syncAllTabs();
-}
-
-  closeModal('modalMaint');
-  document.getElementById('newMaintEquip').value = '';
-  document.getElementById('newMaintSub1').value = '';
-  document.getElementById('newMaintSub2').value = '';
-
-  currentMaintEquip = name;
-  currentMaintSub = mergedSub1.length ? mergedSub1[0] : null;
-  currentMaintUnit = mergedSub2.length ? mergedSub2[0] : null;
-
-  buildMaintSidebar();
-  renderMaintContent();
-  autoSave();
-  syncAllTabs();
-}
-  closeModal('modalMaint');
-  document.getElementById('newMaintEquip').value='';
-  document.getElementById('newMaintSub1').value='';
-  document.getElementById('newMaintSub2').value='';
-
-  currentMaintEquip=name;
-  currentMaintSub=sub1Arr.length ? sub1Arr[0] : null;
-  currentMaintUnit=sub2Arr.length ? sub2Arr[0] : null;
 
   buildMaintSidebar();
   renderMaintContent();
