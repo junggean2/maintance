@@ -2021,7 +2021,7 @@ function addMaintEquip(){
   const sub1Arr = sub1Input ? sub1Input.split(',').map(s => s.trim()).filter(Boolean) : [];
   const sub2Arr = sub2Input ? sub2Input.split(',').map(s => s.trim()).filter(Boolean) : [];
 
-  // 이미 있는 설비라면 상세분류만 추가 확장
+  // 이미 있는 설비라면 목록에 중복 추가하지 않음
   if(!MAINT_EQUIPS.includes(name)){
     MAINT_EQUIPS.push(name);
   }
@@ -2029,15 +2029,35 @@ function addMaintEquip(){
   MAINT_COLORS[name] = color;
   MAINT_LIGHTS[name] = hexToLight(color);
 
-  // 기존 설정과 병합
-  const existingCfg = MAINT_SUB_CONFIG[name] || { sub1: [], sub2: [] };
-  const mergedSub1 = [...new Set([...existingCfg.sub1, ...sub1Arr])];
-  const mergedSub2 = [...new Set([...existingCfg.sub2, ...sub2Arr])];
+  // MAINT_SUB_CONFIG 객체 방어 처리
+  if(!window.MAINT_SUB_CONFIG) window.MAINT_SUB_CONFIG = {};
+  const existingCfg = MAINT_SUB_CONFIG[name] || {};
+  const prevSub1 = Array.isArray(existingCfg.sub1) ? existingCfg.sub1 : [];
+  const prevSub2 = Array.isArray(existingCfg.sub2) ? existingCfg.sub2 : [];
+
+  // 안전하게 병합
+  const mergedSub1 = [...new Set([...prevSub1, ...sub1Arr])];
+  const mergedSub2 = [...new Set([...prevSub2, ...sub2Arr])];
 
   MAINT_SUB_CONFIG[name] = {
     sub1: mergedSub1,
     sub2: mergedSub2
   };
+
+  closeModal('modalMaint');
+  document.getElementById('newMaintEquip').value = '';
+  document.getElementById('newMaintSub1').value = '';
+  document.getElementById('newMaintSub2').value = '';
+
+  currentMaintEquip = name;
+  currentMaintSub = mergedSub1.length ? mergedSub1[0] : null;
+  currentMaintUnit = mergedSub2.length ? mergedSub2[0] : null;
+
+  buildMaintSidebar();
+  renderMaintContent();
+  autoSave();
+  syncAllTabs();
+}
 
   closeModal('modalMaint');
   document.getElementById('newMaintEquip').value = '';
