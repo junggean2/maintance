@@ -2011,26 +2011,48 @@ function addBdongEquip(){
 }
 
 function addMaintEquip(){
-  const name=document.getElementById('newMaintEquip').value.trim();
-  const color=document.getElementById('newMaintColor').value.trim()||'#4A6FA5';
-  const sub1Input=document.getElementById('newMaintSub1').value.trim();
-  const sub2Input=document.getElementById('newMaintSub2').value.trim();
+  const name = document.getElementById('newMaintEquip').value.trim();
+  const color = document.getElementById('newMaintColor').value.trim() || '#4A6FA5';
+  const sub1Input = document.getElementById('newMaintSub1').value.trim();
+  const sub2Input = document.getElementById('newMaintSub2').value.trim();
 
-  if(!name){alert('설비명을 입력해 주세요.');return;}
-  if(MAINT_EQUIPS.includes(name)){alert('이미 존재하는 설비입니다.');return;}
+  if(!name){ alert('설비명을 입력해 주세요.'); return; }
 
-  const sub1Arr = sub1Input ? sub1Input.split(',').map(s=>s.trim()).filter(Boolean) : [];
-  const sub2Arr = sub2Input ? sub2Input.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  const sub1Arr = sub1Input ? sub1Input.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const sub2Arr = sub2Input ? sub2Input.split(',').map(s => s.trim()).filter(Boolean) : [];
 
-  MAINT_EQUIPS.push(name);
-  MAINT_COLORS[name]=color;
-  MAINT_LIGHTS[name]=hexToLight(color);
+  // 이미 있는 설비라면 상세분류만 추가 확장
+  if(!MAINT_EQUIPS.includes(name)){
+    MAINT_EQUIPS.push(name);
+  }
+  
+  MAINT_COLORS[name] = color;
+  MAINT_LIGHTS[name] = hexToLight(color);
+
+  // 기존 설정과 병합
+  const existingCfg = MAINT_SUB_CONFIG[name] || { sub1: [], sub2: [] };
+  const mergedSub1 = [...new Set([...existingCfg.sub1, ...sub1Arr])];
+  const mergedSub2 = [...new Set([...existingCfg.sub2, ...sub2Arr])];
 
   MAINT_SUB_CONFIG[name] = {
-    sub1: sub1Arr,
-    sub2: sub2Arr
+    sub1: mergedSub1,
+    sub2: mergedSub2
   };
 
+  closeModal('modalMaint');
+  document.getElementById('newMaintEquip').value = '';
+  document.getElementById('newMaintSub1').value = '';
+  document.getElementById('newMaintSub2').value = '';
+
+  currentMaintEquip = name;
+  currentMaintSub = mergedSub1.length ? mergedSub1[0] : null;
+  currentMaintUnit = mergedSub2.length ? mergedSub2[0] : null;
+
+  buildMaintSidebar();
+  renderMaintContent();
+  autoSave();
+  syncAllTabs();
+}
   closeModal('modalMaint');
   document.getElementById('newMaintEquip').value='';
   document.getElementById('newMaintSub1').value='';
