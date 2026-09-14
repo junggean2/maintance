@@ -234,6 +234,10 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
       <span class="nav-icon">📈</span>
       <span class="nav-label">종합 분석</span>
     </button>
+    <button class="nav-item" id="snav-spare" onclick="switchMainTab('spare',this)" title="예비품 관리">
+      <span class="nav-icon">📦</span>
+      <span class="nav-label">예비품 관리</span>
+    </button>
     <button class="nav-item" onclick="openModal('modalBdong')" title="설비 관리">
       <span class="nav-icon">⚙️</span>
       <span class="nav-label">설비 관리</span>
@@ -254,6 +258,7 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
       <button class="header-tab on" data-page="bdong" onclick="switchMainTab('bdong',this)">📊 설비 부동 관리</button>
       <button class="header-tab" data-page="maint" onclick="switchMainTab('maint',this)">🔧 설비 보수 이력 관리</button>
       <button class="header-tab" data-page="analysis" onclick="switchMainTab('analysis',this)">📈 종합 분석</button>
+      <button class="header-tab" data-page="spare" onclick="switchMainTab('spare',this)">📦 예비품 관리</button>
     </div>
     <div class="header-right">
       <div class="sync-badge" id="syncStatus">
@@ -367,6 +372,34 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
         </div>
       </div>
 
+      <!-- PAGE 4: 예비품 관리 -->
+      <div id="pageSpare" class="page" style="display:none">
+        <div class="page-header">
+          <div class="page-subtitle">SPARE PARTS INVENTORY</div>
+          <div class="page-title">예비품 관리</div>
+        </div>
+        <div class="action-row">
+          <button class="btn-secondary" onclick="toggleSpareInput()">＋ 예비품 추가 / 관리</button>
+          <button class="btn-maint-paste" onclick="openModal('modalSparePaste')">📋 엑셀 붙여넣기</button>
+          <button class="btn-primary" onclick="saveFile()">💾 저장</button>
+        </div>
+        <div class="input-panel" id="spareInputPanel">
+          <div class="input-title">📦 예비품 직접 입력</div>
+          <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr auto">
+            <div class="form-group"><div class="form-label">분류</div><input class="form-input" type="text" id="fSpareCategory" placeholder="예: 모터, 감속기, 펌프"></div>
+            <div class="form-group"><div class="form-label">사양</div><input class="form-input" type="text" id="fSpareSpec" placeholder="예: 10HP"></div>
+            <div class="form-group"><div class="form-label">위치</div><input class="form-input" type="text" id="fSpareLocation" placeholder="예: 예비품 창고 A-3"></div>
+            <button class="btn-add" onclick="addSpareRecord()">추가</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px" id="spareFilterTabs"></div>
+        <div class="table-wrap" style="max-height:520px">
+          <table><thead><tr>
+            <th style="width:160px">분류</th><th style="width:200px">사양</th><th>위치</th><th style="width:50px">삭제</th>
+          </tr></thead><tbody id="spareTable"></tbody></table>
+        </div>
+      </div>
+
       <footer id="footerYear">선광 설비 관리 통합 시스템 · 2016–2026</footer>
     </div>
 
@@ -440,6 +473,25 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
     <div class="modal-btns">
       <button class="btn-modal-cancel" onclick="closeModal('modalExcelPaste')">취소</button>
       <button class="btn-modal-ok" style="background:#0F6E56" onclick="processExcelPaste()">일괄 반영하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 예비품 엑셀 일괄 붙여넣기 모달 -->
+<div class="modal-overlay" id="modalSparePaste">
+  <div class="modal-box" style="width:550px">
+    <div class="modal-title">📋 예비품 엑셀 붙여넣기 일괄 추가</div>
+    <div style="font-size:11px;color:#64748b;margin-bottom:10px;line-height:1.5">
+      엑셀에서 <strong>분류 | 사양 | 위치</strong> 순서로 셀을 복사(Ctrl+C)한 후 아래에 붙여넣어 주세요.
+    </div>
+    <div class="form-group" style="margin-bottom:10px">
+      <textarea id="sparePasteArea" style="width:100%;height:180px;padding:10px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;font-family:monospace;resize:vertical;outline:none" placeholder="예시:
+모터&#9;10HP&#9;예비품 창고 A-3
+감속기&#9;1/30 감속비&#9;예비품 창고 B-1"></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="closeModal('modalSparePaste')">취소</button>
+      <button class="btn-modal-ok" style="background:#0F6E56" onclick="processSparePaste()">일괄 반영하기</button>
     </div>
   </div>
 </div>
@@ -683,6 +735,7 @@ function buildSaveData(){
     MAINT_RECORDS,
     MAINT_COL_HEADERS,
     MAINT_SUB_CONFIG,
+    SPARE_RECORDS,
     EQUIP_META_EXTRA:Object.fromEntries(Object.entries(EQUIP_META).filter(([k])=>!DEFAULT_BD_EQUIPS.includes(k))),
     MAINT_EQUIPS_EXTRA:MAINT_EQUIPS.filter(n=>!DEFAULT_MT_EQUIPS.includes(n)),
     MAINT_COLORS_EXTRA:Object.fromEntries(Object.entries(MAINT_COLORS).filter(([k])=>!DEFAULT_MT_EQUIPS.includes(k))),
@@ -724,6 +777,7 @@ function applyData(data){
     }));
   }
   if(data.MAINT_COL_HEADERS) MAINT_COL_HEADERS=data.MAINT_COL_HEADERS;
+  if(data.SPARE_RECORDS) SPARE_RECORDS=data.SPARE_RECORDS.map(r=>({category:r.category||'',spec:r.spec||'',location:r.location||''}));
   if(data.EQUIP_META_EXTRA){
     Object.entries(data.EQUIP_META_EXTRA).forEach(([k,v])=>{
       EQUIP_META[k]=v; TAB_BG[k]=v.color;
@@ -755,6 +809,7 @@ function loadSavedData(){
       refreshAllYearTabs();
       buildSubTabs();
       renderView(currentView);
+      if(currentPage==='spare'){ buildSpareFilterTabs(); renderSpareTable(); }
       showToast('🔄 최신 데이터 동기화됨');
     });
   }
@@ -1103,6 +1158,113 @@ function processExcelPaste(){
   }
 }
 
+// ══════════════════════════════════════════════
+// ③ 예비품 관리 데이터 & 로직
+// ══════════════════════════════════════════════
+let SPARE_RECORDS=[]; // {category, spec, location}
+let currentSpareFilter='전체';
+const SPARE_FILTER_COLORS=['#185FA5','#3B6D11','#993556','#BA7517','#534AB7','#0F6E56','#7C3D8F','#0E7490','#854F0B','#A32D2D'];
+function spareFilterColor(cat){
+  const cats=getSpareCategories();
+  const idx=cats.indexOf(cat);
+  return SPARE_FILTER_COLORS[idx>=0?idx%SPARE_FILTER_COLORS.length:0];
+}
+function getSpareCategories(){
+  return [...new Set(SPARE_RECORDS.map(r=>r.category).filter(Boolean))];
+}
+function toggleSpareInput(){
+  const p=document.getElementById('spareInputPanel');
+  p.classList.toggle('open');
+}
+function addSpareRecord(){
+  const category=document.getElementById('fSpareCategory').value.trim();
+  const spec=document.getElementById('fSpareSpec').value.trim();
+  const location=document.getElementById('fSpareLocation').value.trim();
+  if(!category){ alert('분류를 입력해주세요.'); return; }
+  SPARE_RECORDS.push({category,spec,location});
+  document.getElementById('fSpareCategory').value='';
+  document.getElementById('fSpareSpec').value='';
+  document.getElementById('fSpareLocation').value='';
+  buildSpareFilterTabs();
+  renderSpareTable();
+  autoSave();
+  showToast('✅ 예비품이 추가되었습니다.');
+}
+function deleteSpareRecord(realIdx){
+  if(!confirm('이 예비품을 삭제하시겠습니까?'))return;
+  SPARE_RECORDS.splice(realIdx,1);
+  buildSpareFilterTabs();
+  renderSpareTable();
+  autoSave();
+}
+function setSpareFilter(cat){
+  currentSpareFilter=cat;
+  buildSpareFilterTabs();
+  renderSpareTable();
+}
+function buildSpareFilterTabs(){
+  const container=document.getElementById('spareFilterTabs');
+  if(!container) return;
+  const cats=getSpareCategories();
+  const makeBtn=(name,count)=>{
+    const isOn=currentSpareFilter===name;
+    const color=name==='전체'?'#1C2B4A':spareFilterColor(name);
+    return `<button onclick="setSpareFilter('${name.replace(/'/g,"\\'")}')" style="font-size:11px;padding:4px 12px;border-radius:20px;border:1px solid ${isOn?color:'#e2e8f0'};background:${isOn?color:'#fff'};color:${isOn?'#fff':color};cursor:pointer;font-weight:500;transition:all .15s">${name} <span style="opacity:.7">(${count})</span></button>`;
+  };
+  container.innerHTML = makeBtn('전체',SPARE_RECORDS.length)
+    + cats.map(c=>makeBtn(c,SPARE_RECORDS.filter(r=>r.category===c).length)).join('');
+}
+function renderSpareTable(){
+  const tbody=document.getElementById('spareTable');
+  if(!tbody) return;
+  const filtered = SPARE_RECORDS
+    .map((r,idx)=>({...r,idx}))
+    .filter(r=>currentSpareFilter==='전체'||r.category===currentSpareFilter);
+  if(filtered.length===0){
+    tbody.innerHTML=`<tr><td colspan="4" class="empty-msg">${currentSpareFilter==='전체'?'등록된 예비품이 없습니다.':currentSpareFilter+' 분류의 예비품이 없습니다.'}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML=filtered.map(r=>{
+    const color=spareFilterColor(r.category);
+    return `<tr>
+      <td><span style="display:inline-block;padding:2px 9px;border-radius:12px;background:${color}1A;color:${color};font-weight:600;font-size:11px">${r.category}</span></td>
+      <td>${r.spec||'-'}</td>
+      <td>${r.location||'-'}</td>
+      <td><button class="btn-del" onclick="deleteSpareRecord(${r.idx})">삭제</button></td>
+    </tr>`;
+  }).join('');
+}
+function processSparePaste(){
+  const text=document.getElementById('sparePasteArea').value.trim();
+  if(!text){
+    alert('붙여넣을 엑셀 데이터를 입력해주세요.');
+    return;
+  }
+  const lines=text.split(/\r?\n/);
+  let addedCount=0;
+  lines.forEach(line=>{
+    if(!line.trim()) return;
+    const cols=line.split('\t');
+    const category=cols[0]?cols[0].trim():'';
+    const spec=cols[1]?cols[1].trim():'';
+    const location=cols[2]?cols[2].trim():'';
+    if(category){
+      SPARE_RECORDS.push({category,spec,location});
+      addedCount++;
+    }
+  });
+  if(addedCount>0){
+    document.getElementById('sparePasteArea').value='';
+    closeModal('modalSparePaste');
+    buildSpareFilterTabs();
+    renderSpareTable();
+    autoSave();
+    showToast(`✅ ${addedCount}건의 예비품이 추가되었습니다.`);
+  } else {
+    alert('데이터를 파싱하지 못했습니다. 분류, 사양, 위치 순서인지 확인해주세요.');
+  }
+}
+
 function deleteMaintRecord(idx){
   if(!confirm('이 보수 이력을 삭제하시겠습니까?'))return;
   MAINT_RECORDS.splice(idx,1);
@@ -1128,6 +1290,10 @@ function switchMainTab(page,btn){
   }else if(page==='analysis'){
     document.getElementById('pageAnalysis').style.display='';
     renderAnalysis();
+  }else if(page==='spare'){
+    document.getElementById('pageSpare').style.display='';
+    buildSpareFilterTabs();
+    renderSpareTable();
   }
   updateInsightPanel(page);
 }
