@@ -385,9 +385,11 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
         </div>
         <div class="input-panel" id="spareInputPanel">
           <div class="input-title">📦 예비품 직접 입력</div>
-          <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr auto">
+          <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr 0.7fr 1.2fr auto">
             <div class="form-group"><div class="form-label">분류</div><input class="form-input" type="text" id="fSpareCategory" placeholder="예: 모터, 감속기, 펌프"></div>
-            <div class="form-group"><div class="form-label">사양</div><input class="form-input" type="text" id="fSpareSpec" placeholder="예: 10HP"></div>
+            <div class="form-group"><div class="form-label">사양1</div><input class="form-input" type="text" id="fSpareSpec1" placeholder="예: 10HP"></div>
+            <div class="form-group"><div class="form-label">사양2</div><input class="form-input" type="text" id="fSpareSpec2" placeholder="예: 1/30 감속비"></div>
+            <div class="form-group"><div class="form-label">개수</div><input class="form-input" type="number" id="fSpareCount" placeholder="예: 2"></div>
             <div class="form-group"><div class="form-label">위치</div><input class="form-input" type="text" id="fSpareLocation" placeholder="예: 예비품 창고 A-3"></div>
             <button class="btn-add" onclick="addSpareRecord()">추가</button>
           </div>
@@ -395,7 +397,7 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px" id="spareFilterTabs"></div>
         <div class="table-wrap" style="max-height:520px">
           <table><thead><tr>
-            <th style="width:160px">분류</th><th style="width:200px">사양</th><th>위치</th><th style="width:50px">삭제</th>
+            <th style="width:140px">분류</th><th style="width:160px">사양1</th><th style="width:160px">사양2</th><th style="width:70px">개수</th><th>위치</th><th style="width:50px">삭제</th>
           </tr></thead><tbody id="spareTable"></tbody></table>
         </div>
       </div>
@@ -482,12 +484,12 @@ footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-bo
   <div class="modal-box" style="width:550px">
     <div class="modal-title">📋 예비품 엑셀 붙여넣기 일괄 추가</div>
     <div style="font-size:11px;color:#64748b;margin-bottom:10px;line-height:1.5">
-      엑셀에서 <strong>분류 | 사양 | 위치</strong> 순서로 셀을 복사(Ctrl+C)한 후 아래에 붙여넣어 주세요.
+      엑셀에서 <strong>분류 | 사양1 | 사양2 | 개수 | 위치</strong> 순서로 셀을 복사(Ctrl+C)한 후 아래에 붙여넣어 주세요.
     </div>
     <div class="form-group" style="margin-bottom:10px">
       <textarea id="sparePasteArea" style="width:100%;height:180px;padding:10px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;font-family:monospace;resize:vertical;outline:none" placeholder="예시:
-모터&#9;10HP&#9;예비품 창고 A-3
-감속기&#9;1/30 감속비&#9;예비품 창고 B-1"></textarea>
+모터&#9;10HP&#9;3상 380V&#9;2&#9;예비품 창고 A-3
+감속기&#9;1/30 감속비&#9;-&#9;1&#9;예비품 창고 B-1"></textarea>
     </div>
     <div class="modal-btns">
       <button class="btn-modal-cancel" onclick="closeModal('modalSparePaste')">취소</button>
@@ -777,7 +779,7 @@ function applyData(data){
     }));
   }
   if(data.MAINT_COL_HEADERS) MAINT_COL_HEADERS=data.MAINT_COL_HEADERS;
-  if(data.SPARE_RECORDS) SPARE_RECORDS=data.SPARE_RECORDS.map(r=>({category:r.category||'',spec:r.spec||'',location:r.location||''}));
+  if(data.SPARE_RECORDS) SPARE_RECORDS=data.SPARE_RECORDS.map(r=>({category:r.category||'',spec1:r.spec1||r.spec||'',spec2:r.spec2||'',count:r.count||'',location:r.location||''}));
   if(data.EQUIP_META_EXTRA){
     Object.entries(data.EQUIP_META_EXTRA).forEach(([k,v])=>{
       EQUIP_META[k]=v; TAB_BG[k]=v.color;
@@ -1161,7 +1163,7 @@ function processExcelPaste(){
 // ══════════════════════════════════════════════
 // ③ 예비품 관리 데이터 & 로직
 // ══════════════════════════════════════════════
-let SPARE_RECORDS=[]; // {category, spec, location}
+let SPARE_RECORDS=[]; // {category, spec1, spec2, count, location}
 let currentSpareFilter='전체';
 const SPARE_FILTER_COLORS=['#185FA5','#3B6D11','#993556','#BA7517','#534AB7','#0F6E56','#7C3D8F','#0E7490','#854F0B','#A32D2D'];
 function spareFilterColor(cat){
@@ -1178,12 +1180,16 @@ function toggleSpareInput(){
 }
 function addSpareRecord(){
   const category=document.getElementById('fSpareCategory').value.trim();
-  const spec=document.getElementById('fSpareSpec').value.trim();
+  const spec1=document.getElementById('fSpareSpec1').value.trim();
+  const spec2=document.getElementById('fSpareSpec2').value.trim();
+  const count=document.getElementById('fSpareCount').value.trim();
   const location=document.getElementById('fSpareLocation').value.trim();
   if(!category){ alert('분류를 입력해주세요.'); return; }
-  SPARE_RECORDS.push({category,spec,location});
+  SPARE_RECORDS.push({category,spec1,spec2,count,location});
   document.getElementById('fSpareCategory').value='';
-  document.getElementById('fSpareSpec').value='';
+  document.getElementById('fSpareSpec1').value='';
+  document.getElementById('fSpareSpec2').value='';
+  document.getElementById('fSpareCount').value='';
   document.getElementById('fSpareLocation').value='';
   buildSpareFilterTabs();
   renderSpareTable();
@@ -1221,14 +1227,16 @@ function renderSpareTable(){
     .map((r,idx)=>({...r,idx}))
     .filter(r=>currentSpareFilter==='전체'||r.category===currentSpareFilter);
   if(filtered.length===0){
-    tbody.innerHTML=`<tr><td colspan="4" class="empty-msg">${currentSpareFilter==='전체'?'등록된 예비품이 없습니다.':currentSpareFilter+' 분류의 예비품이 없습니다.'}</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="6" class="empty-msg">${currentSpareFilter==='전체'?'등록된 예비품이 없습니다.':currentSpareFilter+' 분류의 예비품이 없습니다.'}</td></tr>`;
     return;
   }
   tbody.innerHTML=filtered.map(r=>{
     const color=spareFilterColor(r.category);
     return `<tr>
       <td><span style="display:inline-block;padding:2px 9px;border-radius:12px;background:${color}1A;color:${color};font-weight:600;font-size:11px">${r.category}</span></td>
-      <td>${r.spec||'-'}</td>
+      <td>${r.spec1||'-'}</td>
+      <td>${r.spec2||'-'}</td>
+      <td>${r.count||'-'}</td>
       <td>${r.location||'-'}</td>
       <td><button class="btn-del" onclick="deleteSpareRecord(${r.idx})">삭제</button></td>
     </tr>`;
@@ -1246,10 +1254,12 @@ function processSparePaste(){
     if(!line.trim()) return;
     const cols=line.split('\t');
     const category=cols[0]?cols[0].trim():'';
-    const spec=cols[1]?cols[1].trim():'';
-    const location=cols[2]?cols[2].trim():'';
+    const spec1=cols[1]?cols[1].trim():'';
+    const spec2=cols[2]?cols[2].trim():'';
+    const count=cols[3]?cols[3].trim():'';
+    const location=cols[4]?cols[4].trim():'';
     if(category){
-      SPARE_RECORDS.push({category,spec,location});
+      SPARE_RECORDS.push({category,spec1,spec2,count,location});
       addedCount++;
     }
   });
